@@ -104,10 +104,10 @@ export class CategoryService {
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
         const SubcategoryExist = await this.subcategoryRepo.find({ categoryId: categoryId })
-        console.log(SubcategoryExist);
+        
 
         if (SubcategoryExist) {
-            console.log(SubcategoryExist);
+            
             
             //prepare data
             const subcategoriesIds = SubcategoryExist.map((sub) => sub._id)
