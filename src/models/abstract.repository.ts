@@ -44,7 +44,7 @@ export abstract class AbstractRepositry<T> {
     delteOne(query: RootFilterQuery<T>, options?: DeleteOptions) {
         return this.nModel.deleteOne(query, options)
     }
-    deleteMany(query: RootFilterQuery<T>, options: DeleteOptions) {
+    deleteMany(query: RootFilterQuery<T>, options?: DeleteOptions) {
         return this.nModel.deleteMany(query, options)
     }
 

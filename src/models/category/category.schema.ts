@@ -13,9 +13,9 @@ export class Category {
     @Prop({ type: String, required: true })
     image: string
 
-    @Prop({ type: Types.ObjectId, required: true })
+    @Prop({ type: Types.ObjectId, required: true })//todo ref:'User'
     createdBy: Types.ObjectId
 }
 
 export type categoryDocument = Category & Document
-export const CategorySchema = SchemaFactory.createForClass(Category)
+export const categorySchema = SchemaFactory.createForClass(Category)

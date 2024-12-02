@@ -2,12 +2,16 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { Types } from 'mongoose';
 import slugify from 'slugify';
 import { deleteFile } from 'src/common';
-import { CategoryRepository } from 'src/models';
+import { CategoryRepository, SubcategoryRepository } from 'src/models';
 import { MessageService } from 'src/utils';
 
 @Injectable()
 export class CategoryService {
-    constructor(private categoryRepo: CategoryRepository, private messageService: MessageService) { }
+    constructor(
+        private categoryRepo: CategoryRepository,
+        private messageService: MessageService,
+        private subcategoryRepo: SubcategoryRepository
+    ) { }
 
     //create category
     createCategory = async (body: any, file: Express.Multer.File) => {
@@ -99,8 +103,25 @@ export class CategoryService {
         if (!categoryExist) {
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
+        const SubcategoryExist = await this.subcategoryRepo.find({ categoryId: categoryId })
+        console.log(SubcategoryExist);
+
+        if (SubcategoryExist) {
+            console.log(SubcategoryExist);
+            
+            //prepare data
+            const subcategoriesIds = SubcategoryExist.map((sub) => sub._id)
+            const imagesPath = SubcategoryExist.map((sub) => sub.image)
+
+            //delete
+            await this.subcategoryRepo.deleteMany({ _id: { $in: subcategoriesIds } })
+            for (let i = 0; i < imagesPath.length; i++) {
+                deleteFile(imagesPath[i]);
+
+            }
+        }
         deleteFile(categoryExist.image)
-        return { success: true  }
+        return { success: true }
     }
 
 }
