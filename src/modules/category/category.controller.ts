@@ -3,7 +3,7 @@ import { CategoryService } from './category.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { dS, fileValidation, fileValidationTypes } from 'src/common';
 import { CategoryDto } from './dto/category.dto';
-import { ParamDto } from './dto/categoryParam.dto';
+import { CategoryParamDto } from './dto/categoryParam.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -28,7 +28,7 @@ export class CategoryController {
 
     //get specific category
     @Get(':categoryId')
-    gateSpecificCategory(@Param() param: ParamDto) {
+    gateSpecificCategory(@Param() param: CategoryParamDto) {
         return this.categoryService.gateSpecificCategory(param)
     }
 
@@ -39,13 +39,13 @@ export class CategoryController {
             storage: dS('uploads/category'),
             fileFilter: fileValidation(fileValidationTypes.image)
         }))
-    updateCategory(@Param() param: ParamDto, @Body() body: any, @UploadedFile() file: Express.Multer.File) {
+    updateCategory(@Param() param: CategoryParamDto, @Body() body: any, @UploadedFile() file: Express.Multer.File) {
         return this.categoryService.updateCategory(param, body, file)
     }
 
     //delete category
     @Delete(':categoryId')
-    deleteCategory(@Param() param: ParamDto) {
+    deleteCategory(@Param() param: CategoryParamDto) {
         return this.categoryService.deleteCategory(param)
     }
 }

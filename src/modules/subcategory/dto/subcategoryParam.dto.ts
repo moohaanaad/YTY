@@ -1,8 +1,10 @@
 import { IsMongoId } from "class-validator";
 import { Types } from "mongoose";
 
-export class CategoryParamDto {
-    
+
+export class SubcategoryParamDto {
+
     @IsMongoId()
-    categoryId: Types.ObjectId
+    subcategoryId: Types.ObjectId
+    
 }
