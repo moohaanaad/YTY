@@ -4,13 +4,21 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SubcategoryModule } from './modules/subcategory/subcategory.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost/YTY'),
+  imports: [
+    ConfigModule.forRoot({
+    envFilePath: './config/.env',
+    isGlobal: true,
+    cache: true
+  }),
+    MongooseModule.forRoot('mongodb://localhost/YTY'),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads'
     }),
-    CategoryModule,SubcategoryModule
+    CategoryModule,SubcategoryModule,AuthModule
   ],
   controllers: [],
   providers: [],

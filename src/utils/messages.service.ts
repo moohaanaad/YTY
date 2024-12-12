@@ -16,6 +16,17 @@ export class MessageService {
         File: {
             invaledFile: 'invaled file formate',
             imageRequired: 'image is required'
+        },
+        user:{
+            ...this.generateMessage('user'),
+            email: 'email already exist',
+            phone: 'phone already exist',
+            verifiedEmail: 'this account is already verified',
+            failToLogin : 'email or password is not correct',
+            OTP: {
+                alreadyExist:'you already have an OTP plase check your email',
+                notMatch: 'your OTP is not match'
+            }
         }
     }
 }
