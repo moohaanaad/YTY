@@ -1,5 +1,4 @@
-import { Type } from "class-transformer";
-import { IsInt, IsMongoId, IsString, MaxLength, MinLength } from "class-validator";
+import { IsMongoId, IsString, MaxLength, MinLength } from "class-validator";
 
 
 export class CategoryDto {
