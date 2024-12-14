@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     isGlobal: true,
     cache: true
   }),
-    MongooseModule.forRoot('mongodb://localhost/YTY'),
+    MongooseModule.forRoot(process.env.DB_HOST),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads'
