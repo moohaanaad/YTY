@@ -33,6 +33,12 @@ export class AuthController {
         return this.authService.forgetPassword(email)
     }
 
+    //forget password
+    @Put('verify-reset')
+    verifyReset(@Body() body: string){
+        return this.authService.verifyReset(body)
+    }
+
     //reset password
     @Put('reset-password')
     resetPassword(@Body() body: ResetPasswordDto){

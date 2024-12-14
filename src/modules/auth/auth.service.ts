@@ -128,6 +128,25 @@ export class AuthService {
 
     }
 
+    verifyReset = async (body: any) => {
+        const { OTP, email } = body
+        
+        //check existence
+        const userExist = await this.userRepo.findOne({ email })
+        if(!userExist){
+            throw new NotFoundException(this.messageService.messages.user.notFound)
+        }
+        console.log(this.OTPService.verifyOTP(OTP,userExist?.OTP));
+        
+        if(!userExist.OTP || !this.OTPService.verifyOTP(OTP,userExist?.OTP)){
+            
+            throw new ConflictException(this.messageService.messages.user.OTP.notMatch)
+        }
+
+        //response
+        return { success: true }
+    }
+
     resetPassword = async (body: any) => {
         const { email, password, OTP } = body
 
