@@ -1,5 +1,4 @@
 import { IsMongoId, IsString } from "class-validator";
-import { Types } from "mongoose";
 
 
 export class CreateSubcategoryDto {
@@ -8,7 +7,4 @@ export class CreateSubcategoryDto {
 
     @IsMongoId()
     categoryId:string
-
-    @IsMongoId()
-    createdBy:string
 }

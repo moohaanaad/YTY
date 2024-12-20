@@ -99,19 +99,23 @@ export class AuthService {
         return { success: true, token }
     }
 
+    //forget password
     forgetPassword = async (email: string) => {
-
+        
         //check existence
         const userExist = await this.userRepo.findOne({ email })
         if (!userExist) {
             throw new NotFoundException(this.messageService.messages.user.notFound)
         }
-        if (userExist?.OTP) {
+
+
+        if (userExist?.OTP && userExist?.expireDateOTP > new Date(Date.now())) {
             throw new ConflictException(this.messageService.messages.user.OTP.alreadyExist)
         }
-
+        
         //genetrate OTP
         userExist.OTP = this.OTPService.generateOTP()
+        userExist.expireDateOTP = new Date(Date.now() + 15 * 60 * 1000)
 
         //save data
         await userExist.save()
@@ -128,25 +132,24 @@ export class AuthService {
 
     }
 
+    //verify reset password
     verifyReset = async (body: any) => {
         const { OTP, email } = body
-        
+
         //check existence
         const userExist = await this.userRepo.findOne({ email })
-        if(!userExist){
+        if (!userExist) {
             throw new NotFoundException(this.messageService.messages.user.notFound)
         }
-        console.log(this.OTPService.verifyOTP(OTP,userExist?.OTP));
+
         
-        if(!userExist.OTP || !this.OTPService.verifyOTP(OTP,userExist?.OTP)){
-            
-            throw new ConflictException(this.messageService.messages.user.OTP.notMatch)
-        }
+        this.OTPService.verifyOTP(OTP, userExist?.OTP, userExist?.expireDateOTP)
 
         //response
         return { success: true }
     }
 
+    //reset password
     resetPassword = async (body: any) => {
         const { email, password, OTP } = body
 
@@ -156,14 +159,13 @@ export class AuthService {
             throw new NotFoundException(this.messageService.messages.user.notFound)
         }
 
-        if (!this.OTPService.verifyOTP(OTP, userExist.OTP)) {
-            throw new ConflictException(this.messageService.messages.user.OTP.notMatch)
-        }
+        this.OTPService.verifyOTP(OTP, userExist?.OTP, userExist?.expireDateOTP)
 
         //prepare data
         const hashedPassword = await this.passwordService.hashPassword(password)
         userExist.password = hashedPassword
-        userExist.OTP = null
+        userExist.OTP = undefined
+        userExist.expireDateOTP = undefined
 
         //save data
         await userExist.save()

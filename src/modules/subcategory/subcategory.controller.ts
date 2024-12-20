@@ -1,12 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { SubcategoryService } from './subcategory.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { dS, fileValidation, fileValidationTypes } from 'src/common';
 import { CreateSubcategoryDto } from './dto/createSubcategory.dto';
 import { CategoryParamDto } from '../category/dto/categoryParam.dto';
 import { SubcategoryParamDto } from './dto/subcategoryParam.dto';
+import { AuthGuard } from 'src/guard/authentication.guard';
 
 @Controller('subcategory')
+@UseGuards(AuthGuard)
 export class SubcategoryController {
     constructor(private subcategoryService: SubcategoryService) { }
 
@@ -16,8 +18,8 @@ export class SubcategoryController {
         storage: dS('uploads/subcategory'),
         fileFilter: fileValidation(fileValidationTypes.image)
     }))
-    createSubcategory(@Body() body: CreateSubcategoryDto, @UploadedFile() file: Express.Multer.File) {
-        return this.subcategoryService.createSubcategory(body, file)
+    createSubcategory(@Body() body: CreateSubcategoryDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
+        return this.subcategoryService.createSubcategory(body, req, file)
     }
 
     //get all subcategories of specific category
@@ -38,8 +40,8 @@ export class SubcategoryController {
         storage: dS('uploads/subcategory'),
         fileFilter: fileValidation(fileValidationTypes.image)
     }))
-    updateSubcategory(@Param() param: SubcategoryParamDto, @Body() body: any, @UploadedFile() file: Express.Multer.File) {
-        return this.subcategoryService.updateSubcategory(param, body,file)
+    updateSubcategory(@Param() param: SubcategoryParamDto, @Body() body: any, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
+        return this.subcategoryService.updateSubcategory(param, body, req, file)
     }
 
     //delete subcategory

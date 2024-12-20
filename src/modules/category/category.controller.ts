@@ -1,11 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { dS, fileValidation, fileValidationTypes } from 'src/common';
-import { CategoryDto } from './dto/category.dto';
+import { CreateCategoryDto } from './dto/category.dto';
 import { CategoryParamDto } from './dto/categoryParam.dto';
+import { AuthGuard } from 'src/guard/authentication.guard';
+import { UpdateCategoryDto } from './dto/updateCategory.dto';
 
 @Controller('category')
+@UseGuards(AuthGuard)
 export class CategoryController {
     constructor(private categoryService: CategoryService) { }
 
@@ -16,8 +19,8 @@ export class CategoryController {
             storage: dS('uploads/category'),
             fileFilter: fileValidation(fileValidationTypes.image)
         }))
-    careateCategory(@Body() body: CategoryDto, @UploadedFile() file: Express.Multer.File) {
-        return this.categoryService.createCategory(body, file)
+    careateCategory(@Body() body: CreateCategoryDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
+        return this.categoryService.createCategory(body, req, file)
     }
 
     //get all categories
@@ -39,8 +42,8 @@ export class CategoryController {
             storage: dS('uploads/category'),
             fileFilter: fileValidation(fileValidationTypes.image)
         }))
-    updateCategory(@Param() param: CategoryParamDto, @Body() body: any, @UploadedFile() file: Express.Multer.File) {
-        return this.categoryService.updateCategory(param, body, file)
+    updateCategory(@Param() param: CategoryParamDto, @Body() body: UpdateCategoryDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
+        return this.categoryService.updateCategory(param, body, req, file)
     }
 
     //delete category

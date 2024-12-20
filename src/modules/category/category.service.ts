@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import slugify from 'slugify';
 import { deleteFile } from 'src/common';
@@ -14,7 +14,8 @@ export class CategoryService {
     ) { }
 
     //create category
-    createCategory = async (body: any, file: Express.Multer.File) => {
+    createCategory = async (body: any, req: any, file: Express.Multer.File) => {
+        const { user } = req
         const { name } = body
 
         //chack Existence
@@ -26,11 +27,17 @@ export class CategoryService {
             deleteFile(file.path)
             throw new ConflictException(this.messageService.messages.category.alreadyExist)
         }
-
+        console.log(req.user);
+        
         //save data
         body.slug = slugify(name)
         body.image = file.path
+        body.createdBy = user._id
+        body.updatedBy = user._id
         const createdCategory = await this.categoryRepo.create(body)
+        if(!createdCategory){
+            throw new InternalServerErrorException()
+        }
 
         //response
         return { success: true, data: createdCategory }
@@ -64,7 +71,8 @@ export class CategoryService {
     }
 
     //update category
-    updateCategory = async (param: any, body: any, file: Express.Multer.File) => {
+    updateCategory = async (param: any, body: any, req: any, file: Express.Multer.File) => {
+        const { user } = req
         const { name } = body
         const { categoryId } = param
         //check existence 
@@ -87,9 +95,10 @@ export class CategoryService {
             categoryExist.slug = slugify(name)
         }
         if (file) {
-            deleteFile(categoryExist.image)
+            deleteFile(categoryExist?.image)
             categoryExist.image = file.path
         }
+        categoryExist.updatedBy = user._id  
         await categoryExist.save()
         return { success: true, data: categoryExist }
     }

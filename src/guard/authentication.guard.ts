@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
 import { UserRepository } from 'src/models/user/user.repository';
 import { UserStatus } from 'src/utils/enums/user.enums';
 
@@ -37,7 +36,7 @@ export class AuthGuard implements CanActivate {
       if (!userExist || userExist?.status == UserStatus.OFFLINE) {
         throw new UnauthorizedException()
       }
-
+      
       //prepare data
       request.user = userExist
       return true;

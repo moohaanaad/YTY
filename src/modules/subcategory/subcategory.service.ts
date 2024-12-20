@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import slugify from 'slugify';
 import { deleteFile } from 'src/common';
 import { CategoryRepository, SubcategoryRepository } from 'src/models';
@@ -13,8 +13,9 @@ export class SubcategoryService {
     ) { }
 
     //create subcategory
-    createSubcategory = async (body: any, file: Express.Multer.File) => {
-        const { name, categoryId, createdBy } = body
+    createSubcategory = async (body: any, req: any, file: Express.Multer.File) => {
+        const { user } = req
+        const { name, categoryId } = body
 
         //check existence
         if (!file) {
@@ -34,14 +35,17 @@ export class SubcategoryService {
 
         body.slug = slugify(name)
         body.image = file.path
-        // todo get createdBy from token
+        body.createdBy = user._id
+        body.updatedBy = user._id
 
         //save data
         const createdsubcategory = await this.subcategoryRepo.create(body)
+        if(!createdsubcategory) {
+            throw new InternalServerErrorException()
+        }
 
         //response 
         return { success: true, data: createdsubcategory }
-
     }
 
     //get all subcategories
@@ -77,8 +81,9 @@ export class SubcategoryService {
     }
 
     //update subcategory
-    updateSubcategory = async (param: any, body: any, file: Express.Multer.File) => {
+    updateSubcategory = async (param: any, body: any, req: any, file: Express.Multer.File) => {
         //distract
+        const { user } = req
         const { subcategoryId } = param
         const { name } = body
 
@@ -88,7 +93,7 @@ export class SubcategoryService {
             if (file) {
                 deleteFile(file.path)
             }
-            throw new NotFoundException(this.messageService.messages.category.notFound)
+            throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
 
         //prepare data
@@ -107,6 +112,7 @@ export class SubcategoryService {
             deleteFile(subcategoryExist.image)
             subcategoryExist.image = file.path
         }
+        subcategoryExist.updatedBy = user._id
         //save update
         await subcategoryExist.save()
 

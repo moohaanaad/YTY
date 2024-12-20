@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import { ConfirmEmail, Gender, UserRole, UserStatus } from "src/utils/enums/user.enums";
 
 @Schema({ timestamps: true })
@@ -35,6 +35,10 @@ export class User {
 
     @Prop({ type: String, unique: true })
     userName: string;
+    
+    @Prop({ type: String })
+    profileImage: string;
+
 
     @Prop({ type: String })
     bio: string
@@ -51,6 +55,9 @@ export class User {
     @Prop({ type: Number })
     OTP: number
 
+    @Prop({tpye: Date })
+    expireDateOTP:Date
+
     @Prop({ type: String })
     education: string
 
@@ -59,6 +66,8 @@ export class User {
 
     @Prop({ type: [String] })
     interested: string[] //look at this agin 
+
+    readonly _id:Types.ObjectId
 
 }
 export type userDocument = User & Document

@@ -16,8 +16,10 @@ export class Subcategory {
     @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
     categoryId:Types.ObjectId
 
-    @Prop({ type: Types.ObjectId, required: true })//todo ref:'User'
+    @Prop({ type: Types.ObjectId, ref:'User', required: true })
     createdBy:Types.ObjectId
+    @Prop({ type: Types.ObjectId, ref:'User', required: true })
+    updatedBy:Types.ObjectId
 }
 
 export type subcategoryDocument = Subcategory & Document

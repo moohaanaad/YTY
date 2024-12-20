@@ -22,10 +22,13 @@ export class MessageService {
             email: 'email already exist',
             phone: 'phone already exist',
             verifiedEmail: 'this account is already verified',
+            userName: this.generateMessage('userName')  ,
             failToLogin : 'email or password is not correct',
             OTP: {
                 alreadyExist:'you already have an OTP plase check your email',
-                notMatch: 'your OTP is not match'
+                notMatch: 'your OTP is not match',
+                expireOTP: 'your OTP is expired',
+                notFoundOTP: 'your OTP is not found please generate an OTP '
             }
         }
     }
