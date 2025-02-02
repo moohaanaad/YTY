@@ -1,4 +1,3 @@
-
 import { Type } from "class-transformer";
 import { IsEmail, IsOptional, IsString, Length, MaxLength, MinLength } from "class-validator";
 

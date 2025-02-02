@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, InternalServerError
 import { Types } from 'mongoose';
 import slugify from 'slugify';
 import { deleteFile } from 'src/common';
-import { CategoryRepository, SubcategoryRepository } from 'src/models';
+import { CategoryRepository, CommunityRepository, SubcategoryRepository } from 'src/models';
 import { MessageService } from 'src/utils';
 
 @Injectable()
@@ -10,7 +10,8 @@ export class CategoryService {
     constructor(
         private categoryRepo: CategoryRepository,
         private messageService: MessageService,
-        private subcategoryRepo: SubcategoryRepository
+        private subcategoryRepo: SubcategoryRepository,
+        private communityRepo: CommunityRepository
     ) { }
 
     //create category
@@ -28,14 +29,14 @@ export class CategoryService {
             throw new ConflictException(this.messageService.messages.category.alreadyExist)
         }
         console.log(req.user);
-        
+
         //save data
         body.slug = slugify(name)
         body.image = file.path
         body.createdBy = user._id
         body.updatedBy = user._id
         const createdCategory = await this.categoryRepo.create(body)
-        if(!createdCategory){
+        if (!createdCategory) {
             throw new InternalServerErrorException()
         }
 
@@ -57,7 +58,7 @@ export class CategoryService {
     }
 
     //get specific category 
-    gateSpecificCategory = async (param: any) => {
+    gatSpecificCategory = async (param: any) => {
         const { categoryId } = param
 
         //check existence
@@ -98,7 +99,7 @@ export class CategoryService {
             deleteFile(categoryExist?.image)
             categoryExist.image = file.path
         }
-        categoryExist.updatedBy = user._id  
+        categoryExist.updatedBy = user._id
         await categoryExist.save()
         return { success: true, data: categoryExist }
     }
@@ -113,14 +114,36 @@ export class CategoryService {
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
         const SubcategoryExist = await this.subcategoryRepo.find({ categoryId: categoryId })
-        
+
 
         if (SubcategoryExist) {
-            
-            
+
             //prepare data
             const subcategoriesIds = SubcategoryExist.map((sub) => sub._id)
             const imagesPath = SubcategoryExist.map((sub) => sub.image)
+            console.log(subcategoriesIds);
+            
+            const communityExist = await this.communityRepo.find({ category: categoryId })
+            console.log(communityExist);
+            
+            //prepare communities data
+            if (communityExist) {
+                const communityIds = communityExist.map((com) => com._id)
+                const communityImages = communityExist.map((com) => com.image)
+                const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg'
+                console.log(communityIds);
+                
+                //delete all communities related by subcategory
+                await this.communityRepo.deleteMany({ _id: { $in: communityIds } })
+
+                //delete all communities images
+                for (let i = 0; i < communityImages.length; i++) {
+                    if (communityImages[i] !== defaultCommunityImage) {
+                        deleteFile(communityImages[i])
+                    }
+
+                }
+            }
 
             //delete
             await this.subcategoryRepo.deleteMany({ _id: { $in: subcategoriesIds } })

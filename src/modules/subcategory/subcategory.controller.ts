@@ -46,7 +46,7 @@ export class SubcategoryController {
 
     //delete subcategory
     @Delete(':subcategoryId')
-    deleteSubcategory(@Param() param: SubcategoryParamDto){
-        return this.subcategoryService.deleteSubcategory(param)
+    deleteSubcategory(@Param() param: SubcategoryParamDto, @Req() req: any){
+        return this.subcategoryService.deleteSubcategory(param, req)
     }
 }

@@ -31,8 +31,8 @@ export class CategoryController {
 
     //get specific category
     @Get(':categoryId')
-    gateSpecificCategory(@Param() param: CategoryParamDto) {
-        return this.categoryService.gateSpecificCategory(param)
+    gatSpecificCategory(@Param() param: CategoryParamDto) {
+        return this.categoryService.gatSpecificCategory(param)
     }
 
     //update category

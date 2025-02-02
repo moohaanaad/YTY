@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import slugify from 'slugify';
 import { deleteFile } from 'src/common';
-import { CategoryRepository, SubcategoryRepository } from 'src/models';
+import { CategoryRepository, CommunityRepository, SubcategoryRepository } from 'src/models';
 import { MessageService } from 'src/utils';
 
 @Injectable()
@@ -9,7 +9,8 @@ export class SubcategoryService {
     constructor(
         private subcategoryRepo: SubcategoryRepository,
         private categoryRepo: CategoryRepository,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private communityRepo: CommunityRepository
     ) { }
 
     //create subcategory
@@ -40,7 +41,7 @@ export class SubcategoryService {
 
         //save data
         const createdsubcategory = await this.subcategoryRepo.create(body)
-        if(!createdsubcategory) {
+        if (!createdsubcategory) {
             throw new InternalServerErrorException()
         }
 
@@ -88,7 +89,7 @@ export class SubcategoryService {
         const { name } = body
 
         //check existence
-        const subcategoryExist = await this.subcategoryRepo.findById(subcategoryId)//todo make createdBy who can update his subcategory
+        const subcategoryExist = await this.subcategoryRepo.findOne({ _id: subcategoryId, createdBy: user._id })//todo make createdBy who can update his subcategory
         if (!subcategoryExist) {
             if (file) {
                 deleteFile(file.path)
@@ -121,14 +122,36 @@ export class SubcategoryService {
     }
 
     //delete subcategory
-    deleteSubcategory = async (param: any) => {
+    deleteSubcategory = async (param: any, req: any) => {
         const { subcategoryId } = param
+        const { user } = req
 
         //check existence
-        const subcategoryExist = await this.subcategoryRepo.findByIdAndDelete(subcategoryId)//todo make createdBy who can delete his subcategory
+        const subcategoryExist = await this.subcategoryRepo.findOneAndDelete({ _id: subcategoryId, createdBy: user._id })
         if (!subcategoryExist) {
             throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
+
+        //prepare data 
+        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId })
+
+        //delete communities
+        if (communityExist) {
+
+            const communityIds = communityExist.map((com) => com._id)
+            const communityImage = communityExist.map((com) => com.image)
+            const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg' 
+
+            await this.communityRepo.deleteMany({ _id: { $in: communityIds } })
+
+            for (let i = 0; i < communityImage.length; i++) {
+                if(communityImage[i] !== defaultCommunityImage) {
+                    deleteFile(communityImage[i])
+                }
+            }
+
+        }
+
         //delete image
         deleteFile(subcategoryExist.image)
 

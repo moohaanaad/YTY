@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
       }
 
       //check user existence
-      const userExist = await this.userRepo.findById(_id)
+      const userExist = await this.userRepo.findById(_id).select("-password")
       if (!userExist || userExist?.status == UserStatus.OFFLINE) {
         throw new UnauthorizedException()
       }

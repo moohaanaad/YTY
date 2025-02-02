@@ -7,6 +7,7 @@ import { SubcategoryModule } from './modules/subcategory/subcategory.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
+import { CommunityModule } from './modules/community/community.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +20,7 @@ import { UserModule } from './modules/user/user.module';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads'
     }),
-    CategoryModule,SubcategoryModule,AuthModule,UserModule
+    CategoryModule,SubcategoryModule,AuthModule,UserModule,CommunityModule
   ],
   controllers: [],
   providers: [],

@@ -65,7 +65,7 @@ export class User {
     skill: string
 
     @Prop({ type: [String] })
-    interested: string[] //look at this agin 
+    interested: string[]
 
     readonly _id:Types.ObjectId
 

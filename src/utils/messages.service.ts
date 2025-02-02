@@ -13,6 +13,7 @@ export class MessageService {
     messages = {
         category: this.generateMessage('category'),
         subcategory: this.generateMessage('subcategory'),
+        community: this.generateMessage('community'),
         File: {
             invaledFile: 'invaled file formate',
             imageRequired: 'image is required'
