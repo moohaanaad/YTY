@@ -22,3 +22,9 @@ export enum ConfirmEmail {
     BLOCKED = 'blocked',
     DELEETED = 'deleted'
 }
+
+export enum joinCommunity {
+    PENDING = 'pending',
+    JOINED = 'joined',
+    REJECTED = 'rejected'
+}

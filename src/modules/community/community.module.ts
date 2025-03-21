@@ -1,14 +1,15 @@
-import { Module } from '@nestjs/common';
-import { CommunityService } from './community.service';
-import { CommunityController } from './community.controller';
-import { MessageService } from 'src/utils';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Community, CommunityRepository, communitySchema, Subcategory, SubcategoryRepository, subcategorySchema, User, UserRepository, userSchema } from 'src/models';
-import { PasswordService } from 'src/common/hashAndComparePassword/password.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { MailService } from 'src/utils/mail.service';
-import { OTPService } from 'src/utils/OTP.service';
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { MongooseModule } from "@nestjs/mongoose";
+import { PasswordService } from "src/common";
+import { Community, CommunityRepository, communitySchema, Subcategory, SubcategoryRepository, subcategorySchema, User, UserRepository, userSchema } from "src/models";
+import { MailService, MessageService, OTPService } from "src/utils";
+import { CommunityController } from "./community.controller";
+import { CommunityService } from "./community.service";
+import { JoinController } from "./join-community/join.controller";
+import { JoinService } from "./join-community/join.service";
+
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -16,12 +17,12 @@ import { OTPService } from 'src/utils/OTP.service';
     { name: Community.name, schema: communitySchema },
     { name: Subcategory.name, schema: subcategorySchema }
   ])],
-  providers: [CommunityService, MessageService, CommunityRepository, SubcategoryRepository, UserRepository,
+  providers: [CommunityService, JoinService, MessageService, CommunityRepository, SubcategoryRepository, UserRepository,
     PasswordService,
     JwtService,
     ConfigService,
     MailService,
     OTPService],
-  controllers: [CommunityController]
+  controllers: [CommunityController, JoinController ]
 })
 export class CommunityModule { }

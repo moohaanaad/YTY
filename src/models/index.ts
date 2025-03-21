@@ -6,6 +6,7 @@ export * from './category/category.repository'
 export * from './subcategory/subcategory.schema'
 export * from './subcategory/subcategory.repository'
 
+//community
 export * from './community/community.schema'
 export * from './community/community.repository'
 

@@ -3,7 +3,7 @@ import { deleteFile } from 'src/common';
 import { UserRepository } from 'src/models/user/user.repository';
 import { MessageService } from 'src/utils';
 import { CheckExistService } from './checkExist.service';
-import { Gender } from 'src/utils/enums/user.enums';
+import { Gender } from 'src/utils/enums/user.enum';
 
 @Injectable()
 export class UserService {
@@ -17,7 +17,7 @@ export class UserService {
     updateUser = async (body: any, req: any, file: Express.Multer.File) => {
         const {
             email, userName, phone, firstName, lastName, address, BD, gender,
-            bio, education, skill, interested
+            bio, education, skill, interested,
         } = body
         const { user } = req
 
@@ -52,19 +52,18 @@ export class UserService {
         }
 
         //preapre data
-        if (body?.address) {
-            body.address = JSON.parse(address)
-        }
+        
         const updateableFields = {
             firstName,
             lastName,
-            address: body.address,
+            address,
             BD,
             gender,
             bio,
             education,
             skill,
             interested,
+            
         };
 
 

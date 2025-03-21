@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { CategoryService } from './category.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { dS, fileValidation, fileValidationTypes } from 'src/common';
-import { CreateCategoryDto } from './dto/category.dto';
-import { CategoryParamDto } from './dto/categoryParam.dto';
-import { AuthGuard } from 'src/guard/authentication.guard';
-import { UpdateCategoryDto } from './dto/updateCategory.dto';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common"
+import { FileInterceptor } from "@nestjs/platform-express"
+import { dS, fileValidation, fileValidationTypes } from "src/common"
+import { AuthGuard } from "src/guard/authentication.guard"
+import { CategoryService } from "./category.service"
+import { CreateCategoryDto } from "./dto/category.dto"
+import { CategoryParamDto } from "./dto/categoryParam.dto"
+import { UpdateCategoryDto } from "./dto/updateCategory.dto"
+
 
 @Controller('category')
 @UseGuards(AuthGuard)

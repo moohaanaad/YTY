@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsEmail, IsOptional, IsString, Length, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, Length, MaxLength, MinLength, ValidateNested } from "class-validator";
 
 
 class AddressDto {
@@ -36,6 +36,7 @@ export class UpdateUserDto {
     BD: Date;
 
     @IsOptional()
+    @ValidateNested()
     @Type(() => AddressDto)
     address: AddressDto;
 

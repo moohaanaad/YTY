@@ -1,14 +1,14 @@
-import { Module } from '@nestjs/common';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, userSchema } from 'src/models/user/user.schema';
-import { UserRepository } from 'src/models/user/user.repository';
-import { CheckExistService } from './checkExist.service';
-import { MessageService } from 'src/utils';
-import { AuthGuard } from 'src/guard/authentication.guard';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { MongooseModule } from "@nestjs/mongoose";
+import { AuthGuard } from "src/guard/authentication.guard";
+import { User, UserRepository, userSchema } from "src/models";
+import { MessageService } from "src/utils";
+import { CheckExistService } from "./checkExist.service";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
+
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: User.name, schema: userSchema }])],

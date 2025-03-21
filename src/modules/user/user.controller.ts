@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/guard/authentication.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { dS, fileValidation, fileValidationTypes } from 'src/common';
+import { deleteFile, dS, fileValidation, fileValidationTypes } from 'src/common';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { errorMessages } from 'src/common/errorhandling/prepareErrorMessage';
 
 @Controller('user')
 @UseGuards(AuthGuard)
@@ -16,8 +19,35 @@ export class UserController {
         storage: dS('uploads/user'),
         fileFilter: fileValidation(fileValidationTypes.image)
     }))
-    updateUser(@Body() body: UpdateUserDto, @Req() req: any,@UploadedFile() file: Express.Multer.File) {
-        return this.userSerive.updateUser(body, req, file)
+    async updateUser(
+        @Body() body: any,
+        @Req() req: any,
+        @UploadedFile() file: Express.Multer.File
+    ) {
+        try {
+
+            // Parse nested JSON fields manually
+            if (body.address) body.address = JSON.parse(body.address);
+
+
+            // Convert to DTO
+            const dto = plainToInstance(UpdateUserDto, body);
+
+            // Validate DTO manually
+            const errors = await validate(dto);
+
+            if (errors.length > 0) {
+
+                throw new BadRequestException(errors);
+            }
+
+            // Pass to service
+            return this.userSerive.updateUser(dto, req, file);
+
+        } catch (error) {
+            if (file) deleteFile(file.path)
+            throw new BadRequestException(errorMessages(error));
+        }
     }
 
     //get user

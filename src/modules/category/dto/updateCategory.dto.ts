@@ -1,5 +1,5 @@
-import { IntersectionType } from "@nestjs/mapped-types";
+import { PartialType } from "@nestjs/mapped-types";
 import { CreateCategoryDto } from "./category.dto";
 
 
-export class UpdateCategoryDto extends IntersectionType(CreateCategoryDto) { }
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) { }

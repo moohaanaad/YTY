@@ -1,8 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import slugify from 'slugify';
-import { deleteFile } from 'src/common';
-import { CommunityRepository, SubcategoryRepository } from 'src/models';
-import { MessageService } from 'src/utils';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common"
+import slugify from "slugify"
+import { deleteFile } from "src/common"
+import { CommunityRepository, SubcategoryRepository } from "src/models"
+import { MessageService } from "src/utils"
+
 
 @Injectable()
 export class CommunityService {
@@ -35,8 +36,8 @@ export class CommunityService {
             throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
         //prepare data
-        body.location = JSON.parse(body.location)
-        body.date = JSON.parse(body.date)
+        body.location = body.location
+        body.date = body.date
         body.slug = slugify(name)
         body.volunteer = user._id
         body.createdBy = user._id
@@ -175,11 +176,10 @@ export class CommunityService {
             throw new NotFoundException('you are not the owner or the community was now found')
         }
         const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg'
-        if(communityExist?.image && communityExist.image !== defaultCommunityImage){
+        if (communityExist?.image && communityExist.image !== defaultCommunityImage) {
             deleteFile(communityExist.image)
         }
 
         return { success: true }
     }
-
 }

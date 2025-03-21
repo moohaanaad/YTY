@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { CategoryController } from './category.controller';
-import { CategoryService } from './category.service';
-import { MessageService } from 'src/utils';
-import { Category, CategoryRepository, categorySchema, Community, CommunityRepository, communitySchema, Subcategory, SubcategoryRepository, subcategorySchema, User, userSchema } from 'src/models';
-import { MongooseModule } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { UserRepository } from 'src/models/user/user.repository';
+import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
+import { Category, CategoryRepository, categorySchema, Community, CommunityRepository, communitySchema, Subcategory, SubcategoryRepository, subcategorySchema, User, UserRepository, userSchema } from "src/models";
+import { CategoryController } from "./category.controller";
+import { CategoryService } from "./category.service";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { MessageService } from "src/utils";
+
 
 @Module({
     imports: [MongooseModule.forFeature([
@@ -18,7 +18,7 @@ import { UserRepository } from 'src/models/user/user.repository';
     controllers: [CategoryController],
     providers: [
         CategoryRepository, SubcategoryRepository, CategoryService,
-         MessageService, JwtService, ConfigService, UserRepository,CommunityRepository
-        ]
+        MessageService, JwtService, ConfigService, UserRepository, CommunityRepository
+    ]
 })
 export class CategoryModule { }

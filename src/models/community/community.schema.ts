@@ -64,6 +64,9 @@ export class Community {
 
     @Prop({ type: Types.ObjectId, ref: 'User' })
     updatedBy: Types.ObjectId
+
+    @Prop({ type: [Types.ObjectId], ref: "User"})
+    askTOJoin: [Types.ObjectId]
 }
 
 export type communityDocument = Community & Document

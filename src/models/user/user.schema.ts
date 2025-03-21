@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
-import { ConfirmEmail, Gender, UserRole, UserStatus } from "src/utils/enums/user.enums";
+import { Document, Mongoose, Types } from "mongoose";
+import { ConfirmEmail, Gender, UserRole, UserStatus } from "src/utils/enums/user.enum";
+import { joinCommunities } from "./subdocumnet/joinCommunity";
 
 @Schema({ timestamps: true })
 export class User {
@@ -35,7 +36,7 @@ export class User {
 
     @Prop({ type: String, unique: true })
     userName: string;
-    
+
     @Prop({ type: String })
     profileImage: string;
 
@@ -55,8 +56,8 @@ export class User {
     @Prop({ type: Number })
     OTP: number
 
-    @Prop({tpye: Date })
-    expireDateOTP:Date
+    @Prop({ tpye: Date })
+    expireDateOTP: Date
 
     @Prop({ type: String })
     education: string
@@ -67,7 +68,10 @@ export class User {
     @Prop({ type: [String] })
     interested: string[]
 
-    readonly _id:Types.ObjectId
+    @Prop({ type: [Object] })
+    communities: joinCommunities[]
+
+    readonly _id: Types.ObjectId
 
 }
 export type userDocument = User & Document

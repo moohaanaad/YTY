@@ -1,15 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UserRepository } from 'src/models/user/user.repository';
-import { MessageService } from 'src/utils';
-import { PasswordService } from 'src/common/hashAndComparePassword/password.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { MailService } from 'src/utils/mail.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, userSchema } from 'src/models/user/user.schema';
-import { OTPService } from 'src/utils/OTP.service';
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { MongooseModule } from "@nestjs/mongoose";
+import { PasswordService } from "src/common";
+import { User, UserRepository, userSchema } from "src/models";
+import { MailService, MessageService, OTPService } from "src/utils";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: User.name, schema: userSchema }])],

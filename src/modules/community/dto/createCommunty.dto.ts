@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsEnum, IsMongoId, IsNumber, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from "class-validator"
+import { IsArray, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from "class-validator"
 import { Types } from "mongoose"
 import { CommunityStatus } from "src/utils/enums/community.enum";
 
@@ -21,48 +21,31 @@ class LocationDto {
     street: string;
 }
 
-// class DateDto {
-//     @Type(() => Date)
-//     startDate: Date
-
-//     @Type(() => Date)
-//     endDate: Date
-
-//     @Type(() => Date)
-//     schedule: string[]
-
-//     @Type(() => Date)
-//     startAt: Date
-
-//     @Type(() => Date)
-//     finishAt: Date
-// }
-
 class DateDto {
+    @IsNotEmpty()
     @Type(() => Date)
-    @Transform(({ value }) => new Date(value))
     startDate: Date;
-  
+
+    @IsNotEmpty()
     @Type(() => Date)
-    @Transform(({ value }) => new Date(value))
     endDate: Date;
-  
-    @Type(() => Date)
-    @Transform(({ value }) => JSON.parse(value)) // Parse JSON string to array
+
+    @IsArray()
+    @IsString({ each: true }) // Ensures each item in the array is a string
     schedule: string[];
-  
+
+    @IsNotEmpty()
     @Type(() => Date)
-    @Transform(({ value }) => new Date(value))
     startAt: Date;
-  
+
+    @IsNotEmpty()
     @Type(() => Date)
-    @Transform(({ value }) => new Date(value))
     finishAt: Date;
-  }
+}
 
 
 export class CreateCommunityDto {
-
+    
     @IsString()
     @MinLength(2)
     @MaxLength(50)
@@ -92,17 +75,17 @@ export class CreateCommunityDto {
     @IsString()
     roles: string
 
-    // @ValidateNested()
+    @IsNotEmpty()
+    @ValidateNested()
     @Type(() => LocationDto)
-    // @Transform(({ value }) => JSON.parse(value))
-    location: LocationDto
+    location: LocationDto;
 
     @IsEnum(CommunityStatus)
     status: string
 
-    // @ValidateNested()
-    // @Transform(({ value }) => JSON.parse(value))
+    @IsNotEmpty()
+    @ValidateNested()
     @Type(() => DateDto)
-    date: DateDto
+    date: DateDto;
     
 }

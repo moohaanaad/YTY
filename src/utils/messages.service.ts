@@ -13,7 +13,21 @@ export class MessageService {
     messages = {
         category: this.generateMessage('category'),
         subcategory: this.generateMessage('subcategory'),
-        community: this.generateMessage('community'),
+        community: {
+            ...this.generateMessage('community'),
+            join:{
+                ...this.generateMessage('join request'),
+                communityFull: 'this community is full',
+                communityRejected: 'You have been rejected from this community and cannot reapply',
+                alreadyJoined: "you are already joined",
+                alreadyRequested: "you are already requested",
+                joinSuccessfully:'Joined the community successfully',
+                leaveSuccessfully:'leaved the community successfully',
+                requestSent: 'Join request sent. Awaiting admin approval',
+                joinCanceled: 'Join request canceled successfully',
+                joinNotFound: 'you are not joined in this community'
+            }
+        },
         File: {
             invaledFile: 'invaled file formate',
             imageRequired: 'image is required'
