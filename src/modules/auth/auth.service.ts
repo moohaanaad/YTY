@@ -3,8 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordService } from 'src/common/hashAndComparePassword/password.service';
 import { UserRepository } from 'src/models/user/user.repository';
-import { MessageService } from 'src/utils';
-import { ConfirmEmail, UserStatus } from 'src/utils/enums/user.enums';
+import { ConfirmEmail, MessageService, UserStatus } from 'src/utils';
 import { MailService } from 'src/utils/mail.service';
 import { OTPService } from 'src/utils/OTP.service';
 

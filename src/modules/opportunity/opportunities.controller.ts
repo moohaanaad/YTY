@@ -3,7 +3,7 @@ import { OpportunitiesService } from './opportunities.service';
 import { CreateOpportunityDto } from './dto/create-opportunity.dto';
 import { UpdateOpportunityDto } from './dto/update-opportunity.dto';
 import { Roles } from 'src/modules/authorization/roles.decorator';
-import { UserRole } from 'src/utils/enums/user.enums';
+import { UserRole } from 'src/utils'; 
 import { RolesGuard } from 'src/guard/roles.guard';
 import { AuthGuard } from 'src/guard/authentication.guard';
 
