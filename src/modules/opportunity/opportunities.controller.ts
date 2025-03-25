@@ -6,6 +6,7 @@ import { Roles } from 'src/modules/authorization/roles.decorator';
 import { UserRole } from 'src/utils'; 
 import { RolesGuard } from 'src/guard/roles.guard';
 import { AuthGuard } from 'src/guard/authentication.guard';
+import { AdminGuard } from 'src/guard/admin.guard';
 
 @Controller('opportunities')
 export class OpportunitiesController {
@@ -36,7 +37,7 @@ export class OpportunitiesController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, AdminGuard)
   @Roles(UserRole.VULONTEER, UserRole.ADMIN) // Only the creator can delete
   async remove(@Param('id') id: string, @Req() req) {
     return this.opportunitiesService.delete(id, req.user.id);
