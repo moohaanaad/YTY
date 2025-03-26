@@ -11,7 +11,9 @@ import { UpdateCommuntyDto } from "./dto/updateCommunity.dto";
 
 
 
+
 @Controller('community')
+
 @UseGuards(AuthGuard)
 export class CommunityController {
 
