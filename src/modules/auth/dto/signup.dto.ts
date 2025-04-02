@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsObject, IsOptional, IsString, IsStrongPassword, Length, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsDate, IsEmail, IsNotEmpty, IsObject, IsOptional, IsString, IsStrongPassword, Length, MaxLength, MinLength, ValidateNested } from "class-validator";
 
 
 class AddressDto {
@@ -29,6 +29,12 @@ export class SignupDto {
     @MinLength(3)
     @MaxLength(20)
     lastName: string
+    
+    @IsString()
+    @IsNotEmpty({ message: "userName cannot be empty" })
+    @Length(3, 20)
+userName: string;
+
 
     @IsEmail()
     email: string
@@ -51,4 +57,7 @@ export class SignupDto {
     @IsString()
     @Length(11)
     phone: string
+
+    @IsString()
+    role: string 
 }

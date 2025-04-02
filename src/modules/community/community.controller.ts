@@ -17,13 +17,14 @@ import { UserRole } from "src/utils";
 
 @Controller('community')
 
-@UseGuards(AuthGuard,RolesGuard)
+
 export class CommunityController {
 
     constructor(private communityService: CommunityService) { }
 
     //create community
     @Post()
+    @UseGuards(RolesGuard,AuthGuard)
     @Roles(UserRole.ADMIN,UserRole.VULONTEER)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
