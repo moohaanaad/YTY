@@ -46,11 +46,6 @@ userName: string;
     @Type(() => AddressDto)
     address: AddressDto;
 
-    @IsDate()
-    @Type(() => Date)
-    BD: Date;
-
-
     @IsString()
     gender: string
 

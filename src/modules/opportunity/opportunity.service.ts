@@ -11,16 +11,17 @@ export class OpportunitiesService {
     @InjectModel(Opportunity.name) private opportunityModel: Model<OpportunityDocument>,
   ) {}
 
-  async create(createOpportunityDto: CreateOpportunityDto, userId: string): Promise<Opportunity> {
-    const newOpportunity = new this.opportunityModel({ ...createOpportunityDto, createdBy: userId });
-    return newOpportunity.save();
+  async createOpportunity(req: any, body: any, file: Express.Multer.File) {
+
+
+
   }
 
-  async findAll(): Promise<Opportunity[]> {
+  async findAll() {
     return this.opportunityModel.find().populate('createdBy', 'email');
   }
 
-  async findOne(id: string): Promise<Opportunity> {
+  async findOne(id: string) {
     const opportunity = await this.opportunityModel.findById(id);
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');
@@ -28,7 +29,7 @@ export class OpportunitiesService {
     return opportunity;
   }
 
-  async update(id: string, updateOpportunityDto: UpdateOpportunityDto, userId: string): Promise<Opportunity> {
+  async update(id: string, updateOpportunityDto: UpdateOpportunityDto, userId: string) {
     const opportunity = await this.opportunityModel.findById(id);
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');
@@ -39,7 +40,7 @@ export class OpportunitiesService {
     return this.opportunityModel.findByIdAndUpdate(id, updateOpportunityDto, { new: true });
   }
 
-  async delete(id: string, userId: string): Promise<void> {
+  async delete(id: string, userId: string) {
     const opportunity = await this.opportunityModel.findById(id);
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');

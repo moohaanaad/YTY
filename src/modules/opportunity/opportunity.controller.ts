@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards, Req } from '@nestjs/common';
-import { OpportunitiesService } from './opportunities.service';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards, Req, UploadedFile } from '@nestjs/common';
+import { OpportunitiesService } from './opportunity.service';
 import { CreateOpportunityDto } from './dto/create-opportunity.dto';
 import { UpdateOpportunityDto } from './dto/update-opportunity.dto';
 import { Roles } from 'src/modules/authorization/roles.decorator';
@@ -15,8 +15,8 @@ export class OpportunitiesController {
   @Post()
   @Roles(UserRole.ADMIN,UserRole.VULONTEER) // Only Volunteers & Admins can create opportunities
   @UseGuards(AuthGuard,RolesGuard)
-  async create(@Body() createOpportunityDto: CreateOpportunityDto, @Req() req) {
-    return this.opportunitiesService.create(createOpportunityDto, req.user.id);
+  async createOpportunity(@Body() body: CreateOpportunityDto, @Req() req: any,@UploadedFile() file: Express.Multer.File) {
+    return this.opportunitiesService.createOpportunity(body, req, file);
   }
 
   @Get()

@@ -8,6 +8,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { CommunityModule } from './modules/community/community.module';
 import { SubcategoryModule } from './modules/subcategory/subcategory.module';
 import { UserModule } from './modules/user/user.module';
+import { OpportunityModule } from './modules/opportunity/opportunity.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,7 +21,7 @@ import { UserModule } from './modules/user/user.module';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads'
     }),
-    CategoryModule,SubcategoryModule,AuthModule,UserModule,CommunityModule
+    CategoryModule,SubcategoryModule,AuthModule,UserModule,CommunityModule, OpportunityModule
   ],
   controllers: [],
   providers: [],
