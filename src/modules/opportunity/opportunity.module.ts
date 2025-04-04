@@ -6,14 +6,18 @@ import { Opportunity, OpportunitySchema } from 'src/models/opportunity/opportuni
 import { MessageService } from 'src/utils';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserRepository } from 'src/models';
+import { User, UserRepository, userSchema } from 'src/models';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Opportunity.name, schema: OpportunitySchema }])],
+  imports: [MongooseModule.forFeature([
+      { name: Opportunity.name, schema: OpportunitySchema },
+      { name: User.name, schema: userSchema },
+
+    ])],
   controllers: [OpportunitiesController],
   providers: [
-     MessageService, JwtService, ConfigService, UserRepository,
+    MessageService, JwtService, ConfigService, UserRepository,
     OpportunitiesService
   ],
 })
-export class OpportunityModule {}
+export class OpportunityModule { }

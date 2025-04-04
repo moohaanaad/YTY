@@ -29,11 +29,11 @@ export class SignupDto {
     @MinLength(3)
     @MaxLength(20)
     lastName: string
-    
+
     @IsString()
     @IsNotEmpty({ message: "userName cannot be empty" })
     @Length(3, 20)
-userName: string;
+    userName: string;
 
 
     @IsEmail()
@@ -54,5 +54,5 @@ userName: string;
     phone: string
 
     @IsString()
-    roles: string 
+    roles: string
 }
