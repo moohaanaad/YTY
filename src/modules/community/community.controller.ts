@@ -24,8 +24,9 @@ export class CommunityController {
 
     //create community
     @Post()
-    @UseGuards(RolesGuard,AuthGuard)
     @Roles(UserRole.ADMIN,UserRole.VULONTEER)
+    @UseGuards(RolesGuard)
+    @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)

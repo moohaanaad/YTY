@@ -1,7 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordService } from 'src/common/hashAndComparePassword/password.service';
+import { User, userSchema } from 'src/models';
 import { UserRepository } from 'src/models/user/user.repository';
 import { ConfirmEmail, MessageService, UserStatus } from 'src/utils';
 import { MailService } from 'src/utils/mail.service';
@@ -187,4 +188,6 @@ export class AuthService {
         //response
         return { success: true, data: user.status }
     }
+
+    
 }

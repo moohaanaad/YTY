@@ -3,7 +3,6 @@ import { UserRole } from 'src/utils';
 
  export interface CustomRequest extends Request {
    user?: {
-    id: string;
     firstName: string;
     lastName: string;
     email: string;

@@ -59,5 +59,5 @@ userName: string;
     phone: string
 
     @IsString()
-    role: string 
+    roles: string 
 }
