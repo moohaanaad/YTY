@@ -28,6 +28,9 @@ export class MessageService {
                 joinNotFound: 'you are not joined in this community'
             }
         },
+        opportunity:{
+            ...this.generateMessage("opportunity")
+        },
         File: {
             invaledFile: 'invaled file formate',
             imageRequired: 'image is required'

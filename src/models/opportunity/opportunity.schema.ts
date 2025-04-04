@@ -11,6 +11,9 @@ export class Opportunity {
   @Prop({ required: true })
   title: string;
 
+  @Prop({ type: String, trim: true, required: true })
+  slug: string
+
   @Prop({ required: true })
   description: string;
 
@@ -21,7 +24,7 @@ export class Opportunity {
   image: string
 
   @Prop({ type: [Reaction] })
-    react: Reaction[]
+  react: Reaction[]
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   createdBy: User;

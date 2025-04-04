@@ -35,7 +35,7 @@ export class User {
     gender: string;
 
     @Prop({ type: String })
-    name: string;
+    userName: string;
 
     @Prop({ type: String })
     profileImage: string;

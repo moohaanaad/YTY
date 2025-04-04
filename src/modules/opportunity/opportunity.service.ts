@@ -1,53 +1,128 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Opportunity, OpportunityDocument } from 'src/models/opportunity/opportunity.schema';
-import { CreateOpportunityDto } from './dto/create-opportunity.dto';
-import { UpdateOpportunityDto } from './dto/update-opportunity.dto';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import slugify from 'slugify';
+import { deleteFile } from 'src/common';
+import { opportunityRepository } from 'src/models/opportunity/opportunity.repository';
+import { Opportunity } from 'src/models/opportunity/opportunity.schema';
+import { MessageService } from 'src/utils';
 
 @Injectable()
 export class OpportunitiesService {
   constructor(
-    @InjectModel(Opportunity.name) private opportunityModel: Model<OpportunityDocument>,
-  ) {}
+    private opportnuityRepo: opportunityRepository,
+    private messageService: MessageService
+  ) { }
 
+  //create opportunity
   async createOpportunity(req: any, body: any, file: Express.Multer.File) {
 
+    const { user } = req
 
+    //prepare data
+    body.slug = slugify(body.title)
+    body.image = file?.path
+    body.createdBy = user._id
+    body.updatedBy = user._id
 
-  }
+    //save data 
+    const createdOpportunity = await this.opportnuityRepo.create(body)
 
-  async findAll() {
-    return this.opportunityModel.find().populate('createdBy', 'email');
-  }
-
-  async findOne(id: string) {
-    const opportunity = await this.opportunityModel.findById(id);
-    if (!opportunity) {
-      throw new NotFoundException('Opportunity not found');
+    //if have error
+    if (!createdOpportunity) {
+      deleteFile(file.path)
+      throw new BadRequestException()
     }
-    return opportunity;
+
+    //response
+    return { success: true, data: createdOpportunity }
+
   }
 
-  async update(id: string, updateOpportunityDto: UpdateOpportunityDto, userId: string) {
-    const opportunity = await this.opportunityModel.findById(id);
-    if (!opportunity) {
-      throw new NotFoundException('Opportunity not found');
+  //get all opportunities
+  async getOpportunities() {
+
+    const opportunitiesExist = this.opportnuityRepo.find().populate('createdBy');
+
+    if (!opportunitiesExist) {
+      throw new NotFoundException(this.messageService.messages.opportunity.empty)
     }
-    if (opportunity.createdBy.toString() !== userId) {
+
+    return { success: true, data: opportunitiesExist }
+
+  }
+
+  //get specific opportunity
+  async getSpecificOpportunity(param: any) {
+    const { opportunityId } = param
+
+    //check existence
+    const opportunityExist = await this.opportnuityRepo.findById(opportunityId);
+    if (!Opportunity) {
+      throw new NotFoundException(this.messageService.messages.opportunity.notFound);
+    }
+
+    //response
+    return { suceess: true, data: opportunityExist }
+  }
+
+  //update opportunity
+  async updateOpportunity(param: any, req: any, body: any, file: Express.Multer.File) {
+    const { opportunityId } = param
+    const { user } = req
+    const { title, slug, description, deadline } = body
+
+    //check existence
+    const opportunityExist = await this.opportnuityRepo.findById(opportunityId);
+    if (!opportunityExist) {
+      if (file) {
+        deleteFile(file.path)
+      }
+      throw new NotFoundException(this.messageService.messages.opportunity.notFound);
+    }
+    if (opportunityExist.createdBy.toString() !== user._id) {
+      if (file) {
+        deleteFile(file.path)
+      }
       throw new ForbiddenException('You are not authorized to update this opportunity');
     }
-    return this.opportunityModel.findByIdAndUpdate(id, updateOpportunityDto, { new: true });
+
+    if (file) {
+      //delete old image
+      deleteFile(opportunityExist?.image)
+
+      // update new image 
+      opportunityExist.image = file.path
+    }
+
+    //prepare data
+    const updateableFields = {
+      title,
+      slug,
+      description,
+      deadline,
+      updateBy: user._id
+    }
+
+    //change data 
+    for (const [key, value] of Object.entries(updateableFields)) {
+      if (value !== undefined) {
+        opportunityExist[key] = value
+      }
+    }
+    //save data
+    await opportunityExist.save()
+
+    //response
+    return { success: true, data: opportunityExist }
   }
 
-  async delete(id: string, userId: string) {
-    const opportunity = await this.opportunityModel.findById(id);
+  async delete(id: any, userId: string) {
+    const opportunity = await this.opportnuityRepo.findById(id);
     if (!opportunity) {
       throw new NotFoundException('Opportunity not found');
     }
     if (opportunity.createdBy.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to delete this opportunity');
     }
-    await this.opportunityModel.findByIdAndDelete(id);
+    await this.opportnuityRepo.findByIdAndDelete(id);
   }
 }
