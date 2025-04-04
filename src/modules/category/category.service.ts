@@ -134,7 +134,6 @@ export class CategoryService {
                 const communityImages = communityExist.map((com) => com.image)
                 const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg'
                 console.log(communityIds);
-
                 //delete all communities related by subcategory
                 await this.communityRepo.deleteMany({ _id: { $in: communityIds } })
 

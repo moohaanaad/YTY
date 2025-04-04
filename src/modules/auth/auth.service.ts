@@ -1,10 +1,12 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common"
-import { ConfigService } from "@nestjs/config"
-import { JwtService } from "@nestjs/jwt"
-import { PasswordService } from "src/common"
-import { UserRepository } from "src/models"
-import { ConfirmEmail, MailService, MessageService, OTPService, UserStatus } from "src/utils"
-
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { PasswordService } from 'src/common/hashAndComparePassword/password.service';
+import { User, userSchema } from 'src/models';
+import { UserRepository } from 'src/models/user/user.repository';
+import { ConfirmEmail, MessageService, UserStatus } from 'src/utils';
+import { MailService } from 'src/utils/mail.service';
+import { OTPService } from 'src/utils/OTP.service';
 
 @Injectable()
 export class AuthService {
@@ -186,4 +188,6 @@ export class AuthService {
         //response
         return { success: true, data: user.status }
     }
+
+    
 }

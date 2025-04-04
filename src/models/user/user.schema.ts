@@ -36,7 +36,6 @@ export class User {
 
     @Prop({ type: String, unique: true })
     userName: string;
-
     @Prop({ type: String })
     profileImage: string;
 

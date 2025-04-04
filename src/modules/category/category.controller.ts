@@ -6,15 +6,17 @@ import { CategoryService } from "./category.service"
 import { CreateCategoryDto } from "./dto/category.dto"
 import { CategoryParamDto } from "./dto/categoryParam.dto"
 import { UpdateCategoryDto } from "./dto/updateCategory.dto"
+import { RolesGuard } from "src/guard/roles.guard"
 
 
 @Controller('category')
 @UseGuards(AuthGuard)
 export class CategoryController {
     constructor(private categoryService: CategoryService) { }
-
+    
     //create category
     @Post()
+    @UseGuards(RolesGuard)
     @UseInterceptors(
         FileInterceptor('image', {
             storage: dS('uploads/category'),

@@ -7,18 +7,26 @@ import { AuthGuard } from "src/guard/authentication.guard";
 import { CommunityService } from "./community.service";
 import { CreateCommunityDto } from "./dto/createCommunty.dto";
 import { UpdateCommuntyDto } from "./dto/updateCommunity.dto";
+import { RolesGuard } from "src/guard/roles.guard";
+import { Roles } from "../authorization/roles.decorator";
+import { UserRole } from "src/utils";
+
 
 
 
 
 @Controller('community')
-@UseGuards(AuthGuard)
+
+
 export class CommunityController {
 
     constructor(private communityService: CommunityService) { }
 
     //create community
     @Post()
+    @Roles(UserRole.ADMIN,UserRole.VULONTEER)
+    @UseGuards(RolesGuard)
+    @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
