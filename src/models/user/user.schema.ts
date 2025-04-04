@@ -28,14 +28,15 @@ export class User {
     @Prop({ type: String, unique: true, required: true })
     phone: string;
 
-    @Prop({ type: Date, required: true })
+    @Prop({ type: Date })
     BD: Date;
 
     @Prop({ type: String, enum: Object.values(Gender), required: true })
     gender: string;
 
-    @Prop({ type: String, unique: true })
-    userName: string;
+    @Prop({ type: String })
+    name: string;
+
     @Prop({ type: String })
     profileImage: string;
 

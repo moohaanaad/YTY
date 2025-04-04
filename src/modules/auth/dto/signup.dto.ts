@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsNotEmpty, IsObject, IsOptional, IsString, IsStrongPassword, Length, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsDate, IsEmail, IsObject, IsString, IsStrongPassword, Length, MaxLength, MinLength } from "class-validator";
 
 
 class AddressDto {

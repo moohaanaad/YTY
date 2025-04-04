@@ -22,8 +22,10 @@ export class AuthService {
 
     //signup
     signup = async (body: any) => {
+        try {
         const { email, password, phone } = body
 
+        
         //check existence
         const userExist = await this.userRepo.findOne({ $or: [{ phone }, { email }] })
         if (userExist?.email) {
@@ -32,26 +34,32 @@ export class AuthService {
         if (userExist?.phone) {
             throw new ConflictException(this.messageService.messages.user.phone)
         }
-
+        
         //prepare data
         const hashedPassword = await this.passwordService.hashPassword(password)
         body.password = hashedPassword
-
+        
         //save data
+        console.log("ssssssssssssssssssssssssssss");
+        
         const createdUser = await this.userRepo.create(body)
-
+        console.log("ssssssssssssssssssssssssssss");
         //generate token 
         const token = await this.jwtService.sign({ email }, { secret: this.configService.get<string>('SECRET_VER_TOKEN') })
+        
+            //send email
+            await this.mailService.sendEmail({
+                to: email,
+                subject: "confirm email",
+                html: `<h1>click on <a href="http://localhost:3000/auth/verify/${token}">link</a></h1>`
+            })
+    
+            //response 
+            return { success: true, data: createdUser }
+        } catch (error) {
+            return { error}
+        }
 
-        //send email
-        await this.mailService.sendEmail({
-            to: email,
-            subject: "confirm email",
-            html: `<h1>click on <a href="http://localhost:3000/auth/verify/${token}">link</a></h1>`
-        })
-
-        //response 
-        return { success: true, data: createdUser }
     }
 
     //verify
