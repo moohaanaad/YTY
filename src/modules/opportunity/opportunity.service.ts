@@ -116,49 +116,39 @@ export class OpportunitiesService {
   }
     /**
      * Deletes an opportunity by its ID.
-     * Ensures the user is authorized and removes the associated image if applicable.
+     * Ensures the user is authorized and removes the associated image .
      */
     async deleteOpportunity(param: any, req: any) {
     const { opportunityId } = param
     const { user } = req
-
-<<<<<<< HEAD
+    
     //check existence
     const opportunityExist = await this.opportnuityRepo.findOneAndDelete({ _id: opportunityId });
-=======
-  async deleteOpportunity(param: any, req: any) {
-    const { opportunityId } = param
-    const { user } = req
 
-    //check existence
-    const opportunityExist = await this.opportnuityRepo.findById(opportunityId);
->>>>>>> 6d817c1150d31ce9176501b437112baeb98ad3e1
     if (!opportunityExist) {
       throw new NotFoundException(this.messageService.messages.opportunity.notFound);
+   
+      // If the opportunity doesn't exist, we don't need to delete the file
     }
+    
+    // Check if the user is authorized to delete the opportunity
     if (opportunityExist.createdBy.toString() !== user._id) {
       throw new ForbiddenException('You are not authorized to delete this opportunity');
     }
-<<<<<<< HEAD
-
+    
     //delete old image
-    if (opportunityExist?.image && opportunityExist.image !== 'uploads\\opportunity\\Community-Avatar.jpg') {
-        deleteFile(opportunityExist.image)
+    if (opportunityExist?.image && opportunityExist.image !== 'uploads\\opportunity\\opportunity-Avatar.jpg') {
+        try {
+            await deleteFile(opportunityExist.image)
+          } catch (error) {
+            console.error('Error deleting file:', error);
+        }
+          
     }
-
-    return { success: true }
-=======
-    //if opportunity have image
-    if(opportunityExist?.image){
-
-      deleteFile(opportunityExist.image)
-    }
-    //delete opportunity
-    await this.opportnuityRepo.delteOne({ _id: opportunityId });
 
     //response
-    return { success:true }
->>>>>>> 6d817c1150d31ce9176501b437112baeb98ad3e1
+    return { success: true }
+
   }
   
 }
