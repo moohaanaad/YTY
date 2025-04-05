@@ -115,14 +115,27 @@ export class OpportunitiesService {
     return { success: true, data: opportunityExist }
   }
 
-  async delete(id: any, userId: string) {
-    const opportunity = await this.opportnuityRepo.findById(id);
-    if (!opportunity) {
-      throw new NotFoundException('Opportunity not found');
+  async deleteOpportunity(param: any, req: any) {
+    const { opportunityId } = param
+    const { user } = req
+
+    //check existence
+    const opportunityExist = await this.opportnuityRepo.findById(opportunityId);
+    if (!opportunityExist) {
+      throw new NotFoundException(this.messageService.messages.opportunity.notFound);
     }
-    if (opportunity.createdBy.toString() !== userId) {
+    if (opportunityExist.createdBy.toString() !== user._id) {
       throw new ForbiddenException('You are not authorized to delete this opportunity');
     }
-    await this.opportnuityRepo.findByIdAndDelete(id);
+    //if opportunity have image
+    if(opportunityExist?.image){
+
+      deleteFile(opportunityExist.image)
+    }
+    //delete opportunity
+    await this.opportnuityRepo.delteOne({ _id: opportunityId });
+
+    //response
+    return { success:true }
   }
 }
