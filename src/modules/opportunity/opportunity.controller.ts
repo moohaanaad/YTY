@@ -32,7 +32,7 @@ export class OpportunitiesController {
   }
 
   @Get(':opportunityId')
-  async getSpecificOpportunity(@Param('opportunityId') Param: string) {
+  async getSpecificOpportunity(@Param() Param: string) {
     return this.opportunitiesService.getSpecificOpportunity(Param);
   }
 
@@ -44,14 +44,14 @@ export class OpportunitiesController {
       storage: dS('uploads/opportunity'),
       fileFilter: fileValidation(fileValidationTypes.image)
     }))
-  async updateOpportunity(@Param('opportunityId') param: any, @Req() req: any, @Body() body: UpdateOpportunityDto, @UploadedFile() file: Express.Multer.File) {
+  async updateOpportunity(@Param() param: any, @Req() req: any, @Body() body: UpdateOpportunityDto, @UploadedFile() file: Express.Multer.File) {
     return this.opportunitiesService.updateOpportunity(param, req, body, file);
   }
 
   @Delete(':id')
   @Roles(UserRole.VULONTEER, UserRole.ADMIN) // Only the creator can delete
   @UseGuards(AuthGuard, RolesGuard)
-  async remove(@Param('id') id: string, @Req() req) {
-    return this.opportunitiesService.delete(id, req.user.id);
+  async deleteOpportunity(@Param() param: any, @Req() req: any,) {
+    return this.opportunitiesService.deleteOpportunity(param, req);
   }
 }
