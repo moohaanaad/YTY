@@ -56,23 +56,6 @@ export class CommunityService {
         return { success: true, data: body }
     }
 
-    //get all communities of scepific subcategory
-    getAllCommunities = async (param: any) => {
-        const { subcategoryId } = param
-
-        const subcategoryExist = await this.subcategoryRepo.findById(subcategoryId)
-        if (!subcategoryExist) {
-            throw new NotFoundException(this.messageService.messages.subcategory.notFound)
-        }
-
-        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId })
-        if (!communityExist) {
-            throw new NotFoundException(this.messageService.messages.community.notFound)
-        }
-
-        return { succeess: true, data: communityExist }
-    }
-
     //update community
     updateCommuniuty = async (param: any, req: any, body: any, file: Express.Multer.File) => {
         try {
@@ -150,6 +133,48 @@ export class CommunityService {
             throw new BadRequestException(error)
         }
 
+    }
+
+    //get all communities
+    getAllCommunities = async () => {
+
+        const communityExist = await this.communityRepo.find()
+        if (!communityExist) {
+            return { message: this.messageService.messages.community.empty }
+        }
+        return { success: true, data: communityExist }
+    }
+
+    //get all communities of scepific subcategory
+    subcategoryCommunities = async (param: any) => {
+        const { subcategoryId } = param
+
+        const subcategoryExist = await this.subcategoryRepo.findById(subcategoryId)
+        if (!subcategoryExist) {
+            throw new NotFoundException(this.messageService.messages.subcategory.notFound)
+        }
+
+        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId })
+        if (!communityExist) {
+            throw new NotFoundException(this.messageService.messages.community.notFound)
+        }
+
+        return { succeess: true, data: communityExist }
+    }
+
+    //get all communities of specific user
+    userCommunities = async (req: any) => {
+        const { user } = req
+
+        //check existence
+        const communitiesExist = await this.communityRepo.find({ members: user._id })
+        console.log(communitiesExist);
+        if (!communitiesExist) {
+            throw new NotFoundException(this.messageService.messages.community.empty)
+        }
+
+        //response
+        return { success: true, data: communitiesExist }
     }
 
     //get specific community 

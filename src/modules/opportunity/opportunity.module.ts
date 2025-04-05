@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { User, UserRepository, userSchema } from 'src/models';
 import { ReactionService } from './reaction/reaction.service';
 import { ReactionController } from './reaction/reaction.controller';
+import { OpportunityRepository } from 'src/models/opportunity/opportunity.repository';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -18,8 +19,8 @@ import { ReactionController } from './reaction/reaction.controller';
   ])],
   controllers: [OpportunitiesController, ReactionController],
   providers: [
-    MessageService, JwtService, ConfigService, UserRepository,
-    OpportunitiesService, ReactionService
+    UserRepository, OpportunityRepository,
+    OpportunitiesService, ReactionService, MessageService, JwtService, ConfigService,
   ],
 })
 export class OpportunityModule { }

@@ -17,7 +17,8 @@ export class AuthGuard implements CanActivate {
   ): Promise<boolean> {
 
     const request = context.switchToHttp().getRequest();
-    const token= request.headers.authorization.split(" ")[1]
+    const { token } = request.headers
+    
     try {
       //check token exist
       if (!token) {
@@ -35,11 +36,11 @@ export class AuthGuard implements CanActivate {
       if (!userExist || userExist?.status == UserStatus.OFFLINE) {
         throw new UnauthorizedException()
       }
-      
+
       //prepare data
       request.user = userExist
       return true;
-      
+
     } catch (error) {
       throw new UnauthorizedException(error)
     }

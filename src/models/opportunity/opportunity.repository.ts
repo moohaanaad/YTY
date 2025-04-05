@@ -4,7 +4,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
 
-export class opportunityRepository extends AbstractRepositry<Opportunity> {
+export class OpportunityRepository extends AbstractRepositry<Opportunity> {
     constructor(
         @InjectModel(Opportunity.name) private opportunityModel:Model<OpportunityDocument>
     ){
