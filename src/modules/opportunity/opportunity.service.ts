@@ -87,7 +87,7 @@ export class OpportunitiesService {
 
     if (file) {
       //delete old image
-      deleteFile(opportunityExist?.image)
+      // Removed redundant deleteFile call
 
       // update new image 
       opportunityExist.image = file.path
@@ -114,15 +114,29 @@ export class OpportunitiesService {
     //response
     return { success: true, data: opportunityExist }
   }
+    /**
+     * Deletes an opportunity by its ID.
+     * Ensures the user is authorized and removes the associated image if applicable.
+     */
+    async deleteOpportunity(param: any, req: any) {
+    const { opportunityId } = param
+    const { user } = req
 
-  async delete(id: any, userId: string) {
-    const opportunity = await this.opportnuityRepo.findById(id);
-    if (!opportunity) {
-      throw new NotFoundException('Opportunity not found');
+    //check existence
+    const opportunityExist = await this.opportnuityRepo.findOneAndDelete({ _id: opportunityId });
+    if (!opportunityExist) {
+      throw new NotFoundException(this.messageService.messages.opportunity.notFound);
     }
-    if (opportunity.createdBy.toString() !== userId) {
+    if (opportunityExist.createdBy.toString() !== user._id) {
       throw new ForbiddenException('You are not authorized to delete this opportunity');
     }
-    await this.opportnuityRepo.findByIdAndDelete(id);
+
+    //delete old image
+    if (opportunityExist?.image && opportunityExist.image !== 'uploads\\opportunity\\Community-Avatar.jpg') {
+        deleteFile(opportunityExist.image)
+    }
+
+    return { success: true }
   }
+  
 }
