@@ -106,6 +106,12 @@ export class CommunityController {
         return this.communityService.getAllCommunities()
     }
 
+    //get all communities with the same user's interests
+    @Get('intersting-community')
+    userInterstsCommunities(@Req() req: any) {
+        return this.communityService.userInterstsCommunities(req)
+    }
+
     //get all community of specific subcategory
     @Get(':subcategoryId')
     subcategoryCommunities(

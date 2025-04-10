@@ -50,9 +50,10 @@ export class UserService {
                 user.profileImage = defaultFemaleProfile
             }
         }
-
-        //preapre data
         
+        if (interested) user.interested = JSON.parse(interested);
+        
+        //preapre data
         const updateableFields = {
             firstName,
             lastName,
@@ -62,7 +63,6 @@ export class UserService {
             bio,
             education,
             skill,
-            interested,
             
         };
 

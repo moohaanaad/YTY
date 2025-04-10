@@ -13,8 +13,8 @@ export class Community {
     slug: string
 
 
-    @Prop({ type: String, required: true })
-    type: string
+    @Prop({ type: [String], required: true })
+    types: string[]
 
     @Prop({ type: String, trim: true, required: true })
     desc: string

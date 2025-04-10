@@ -54,7 +54,7 @@ export class CreateCommunityDto {
     @IsString()
     @MinLength(2)
     @MaxLength(50)
-    type: string
+    types: string
 
     @IsString()
     @MinLength(2)

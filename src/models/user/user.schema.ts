@@ -15,6 +15,9 @@ export class User {
     @Prop({ type: String, unique: true, required: true })
     email: string;
 
+    @Prop({ tpye: Date })
+    expireDateEmail: Date
+
     @Prop({ type: String, required: true })
     password: string;
 
@@ -39,7 +42,6 @@ export class User {
 
     @Prop({ type: String })
     profileImage: string;
-
 
     @Prop({ type: String })
     bio: string
