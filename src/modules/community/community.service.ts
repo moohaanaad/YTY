@@ -36,8 +36,7 @@ export class CommunityService {
             throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
         //prepare data
-        body.location = body.location
-        body.date = body.date
+        if (body.types) body.types = JSON.parse(body.types);
         body.slug = slugify(name)
         body.volunteer = user._id
         body.createdBy = user._id
@@ -56,29 +55,12 @@ export class CommunityService {
         return { success: true, data: body }
     }
 
-    //get all communities of scepific subcategory
-    getAllCommunities = async (param: any) => {
-        const { subcategoryId } = param
-
-        const subcategoryExist = await this.subcategoryRepo.findById(subcategoryId)
-        if (!subcategoryExist) {
-            throw new NotFoundException(this.messageService.messages.subcategory.notFound)
-        }
-
-        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId })
-        if (!communityExist) {
-            throw new NotFoundException(this.messageService.messages.community.notFound)
-        }
-
-        return { succeess: true, data: communityExist }
-    }
-
     //update community
     updateCommuniuty = async (param: any, req: any, body: any, file: Express.Multer.File) => {
         try {
             const { communityId } = param
             const { user } = req
-            const { name, desc, limitOfUsers, roles, location, status, date } = body
+            const { name, desc, limitOfUsers, roles, location, status, date, types } = body
 
             //check existence 
             const communityExist = await this.communityRepo.findById(communityId)
@@ -105,16 +87,9 @@ export class CommunityService {
             if (file) {
                 const defaultCommunityIMage = 'uploads\\community\\Community-Avatar.jpg'
                 if (communityExist?.image && communityExist.image !== defaultCommunityIMage) {
-                    deleteFile(communityExist.image)
+                    // deleteFile(communityExist?.image)
                 }
                 communityExist.image = file.path
-            }
-
-            if (location) {
-                communityExist.location = JSON.parse(location)
-            }
-            if (date) {
-                communityExist.date = JSON.parse(date)
             }
 
             if (limitOfUsers) {
@@ -124,10 +99,14 @@ export class CommunityService {
                 communityExist.limitOfUsers = limitOfUsers
             }
 
+            if (types) communityExist.types = JSON.parse(types);
+
             const updateableFields = {
                 desc,
                 roles,
-                status
+                status,
+                location,
+                date
             }
 
             for (const [key, value] of Object.entries(updateableFields)) {
@@ -143,13 +122,78 @@ export class CommunityService {
 
             //response
             return { success: true, data: communityExist }
+            
         } catch (error) {
             if (file) {
                 deleteFile(file.path)
             }
+            console.log(error);
+            
             throw new BadRequestException(error)
         }
 
+    }
+
+    //get all communities
+    getAllCommunities = async () => {
+
+        const communityExist = await this.communityRepo.find()
+        if (!communityExist) {
+            return { message: this.messageService.messages.community.empty }
+        }
+        return { success: true, data: communityExist }
+    }
+
+    //get all communities with the same user's interests
+    userInterstsCommunities = async (req: any) => {
+        const { user } = req
+
+        //check user's interests
+        if (!user?.interested) {
+            throw new NotFoundException("you do not have any interests")
+        }
+        console.log(user.interested);
+        
+        //get community with same interests
+        const communitiesExist = await this.communityRepo.aggregate(user.interested)
+        if (!communitiesExist) {
+            throw new NotFoundException(this.messageService.messages.community.empty)
+        }
+
+        //response
+        return { success: true, data: communitiesExist }
+    }
+
+    //get all communities of scepific subcategory
+    subcategoryCommunities = async (param: any) => {
+        const { subcategoryId } = param
+
+        const subcategoryExist = await this.subcategoryRepo.findById(subcategoryId)
+        if (!subcategoryExist) {
+            throw new NotFoundException(this.messageService.messages.subcategory.notFound)
+        }
+
+        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId })
+        if (!communityExist) {
+            throw new NotFoundException(this.messageService.messages.community.notFound)
+        }
+
+        return { succeess: true, data: communityExist }
+    }
+
+    //get all communities of specific user
+    userCommunities = async (req: any) => {
+        const { user } = req
+
+        //check existence
+        const communitiesExist = await this.communityRepo.find({ members: user._id })
+        console.log(communitiesExist);
+        if (!communitiesExist) {
+            throw new NotFoundException(this.messageService.messages.community.empty)
+        }
+
+        //response
+        return { success: true, data: communitiesExist }
     }
 
     //get specific community 

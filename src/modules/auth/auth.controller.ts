@@ -15,6 +15,12 @@ export class AuthController {
         return this.authService.signup(body)
     }
 
+    //resend email to verify email
+    @Put('resend-email')
+    resendEmailToVerify(@Body() body: any) {
+        return this.authService.resendEmailToVerify(body)
+    }
+
     //verify
     @Get('verify/:token')
     verify(@Param('token') token: string) {

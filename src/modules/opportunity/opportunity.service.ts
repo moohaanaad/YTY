@@ -1,14 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import slugify from 'slugify';
 import { deleteFile } from 'src/common';
-import { opportunityRepository } from 'src/models/opportunity/opportunity.repository';
+import { OpportunityRepository } from 'src/models/opportunity/opportunity.repository';
 import { Opportunity } from 'src/models/opportunity/opportunity.schema';
 import { MessageService } from 'src/utils';
 
 @Injectable()
 export class OpportunitiesService {
   constructor(
-    private opportnuityRepo: opportunityRepository,
+    private opportnuityRepo: OpportunityRepository,
     private messageService: MessageService
   ) { }
 

@@ -16,17 +16,15 @@ import { UserRole } from "src/utils";
 
 
 @Controller('community')
-
-
+@UseGuards(AuthGuard)
 export class CommunityController {
 
     constructor(private communityService: CommunityService) { }
 
     //create community
     @Post()
-    @Roles(UserRole.ADMIN,UserRole.VULONTEER)
+    @Roles(UserRole.ADMIN, UserRole.VULONTEER)
     @UseGuards(RolesGuard)
-    @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -61,31 +59,6 @@ export class CommunityController {
             if (file) deleteFile(file.path)
             throw new BadRequestException(errorMessages(error));
         }
-    }
-    //get all community of specific subcategory
-    @Get(':subcategoryId')
-    getAllCommunities(
-        @Param() param: any
-    ) {
-        return this.communityService.getAllCommunities(param)
-    }
-
-    //get specific community
-    @Get('specific/:communityId')
-    getSpecificCommunity(
-        @Param() param: any,
-        @Req() req: any
-    ) {
-        return this.communityService.getSpecificCommunity(param, req)
-    }
-
-    //delete community
-    @Delete(':communityId')
-    deleteCommunity(
-        @Param() param: any,
-        @Req() req: any
-    ) {
-        return this.communityService.deleteCommunity(param, req)
     }
 
     //update community 
@@ -127,5 +100,49 @@ export class CommunityController {
         }
     }
 
-    
+    //get all communities
+    @Get()
+    getAllCommunities() {
+        return this.communityService.getAllCommunities()
+    }
+
+    //get all communities with the same user's interests
+    @Get('intersting-community')
+    userInterstsCommunities(@Req() req: any) {
+        return this.communityService.userInterstsCommunities(req)
+    }
+
+    //get all community of specific subcategory
+    @Get(':subcategoryId')
+    subcategoryCommunities(
+        @Param() param: any
+    ) {
+        return this.communityService.subcategoryCommunities(param)
+    }
+
+    //get all communities of specific user
+    @Get("/user")
+    userCommunities(
+        @Req() req: any
+    ) {
+        return this.communityService.userCommunities(req)
+    }
+
+    //get specific community
+    @Get('specific/:communityId')
+    getSpecificCommunity(
+        @Param() param: any,
+        @Req() req: any
+    ) {
+        return this.communityService.getSpecificCommunity(param, req)
+    }
+
+    //delete community
+    @Delete(':communityId')
+    deleteCommunity(
+        @Param() param: any,
+        @Req() req: any
+    ) {
+        return this.communityService.deleteCommunity(param, req)
+    }
 }

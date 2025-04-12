@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { opportunityRepository } from 'src/models/opportunity/opportunity.repository';
+import { OpportunityRepository } from 'src/models/opportunity/opportunity.repository';
 import { MessageService } from 'src/utils';
 
 @Injectable()
 export class ReactionService {
 
     constructor(
-        private opportunityRepo: opportunityRepository,
+        private opportunityRepo: OpportunityRepository,
         private messageService: MessageService
     ) { }
 

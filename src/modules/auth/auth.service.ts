@@ -23,46 +23,83 @@ export class AuthService {
     //signup
     signup = async (body: any) => {
         try {
-        const { email, password, phone } = body
+            const { email, password, phone } = body
 
-        
-        //check existence
-        const userExist = await this.userRepo.findOne({ $or: [{ phone }, { email }] })
-        if (userExist?.email) {
-            throw new ConflictException(this.messageService.messages.user.email)
-        }
-        if (userExist?.phone) {
-            throw new ConflictException(this.messageService.messages.user.phone)
-        }
-        
-        //prepare data
-        const hashedPassword = await this.passwordService.hashPassword(password)
-        body.password = hashedPassword
-        
-        //save data
-        console.log("ssssssssssssssssssssssssssss");
-        
-        const createdUser = await this.userRepo.create(body)
-        console.log("ssssssssssssssssssssssssssss");
-        //generate token 
-        const token = await this.jwtService.sign({ email }, { secret: this.configService.get<string>('SECRET_VER_TOKEN') })
-        
+
+            //check existence
+            const userExist = await this.userRepo.findOne({ $or: [{ phone }, { email }] })
+            if (userExist?.email) {
+                throw new ConflictException(this.messageService.messages.user.email)
+            }
+            if (userExist?.phone) {
+                throw new ConflictException(this.messageService.messages.user.phone)
+            }
+
+            //prepare data
+            const hashedPassword = await this.passwordService.hashPassword(password)
+            body.password = hashedPassword
+
+            //save data
+            const createdUser = await this.userRepo.create(body)
+
+            //generate token 
+            const token = await this.jwtService.sign({ email }, { secret: this.configService.get<string>('SECRET_VER_TOKEN') })
+
             //send email
             await this.mailService.sendEmail({
                 to: email,
                 subject: "confirm email",
                 html: `<h1>click on <a href="http://localhost:3000/auth/verify/${token}">link</a></h1>`
             })
-    
+
             //response 
             return { success: true, data: createdUser }
         } catch (error) {
-            return { error}
+            return { error }
         }
 
     }
 
-    //verify
+    //resend email to verify email
+    resendEmailToVerify = async (body) => {
+        const { email } = body
+
+        //check email existence
+        const userExist = await this.userRepo.findOne({ email })
+        if (!userExist) {
+            throw new NotFoundException(this.messageService.messages.user.notFound)
+        }
+        if (userExist.confirmEmail == ConfirmEmail.VERIFIED
+            || userExist.confirmEmail == ConfirmEmail.BLOCKED
+            || userExist.confirmEmail == ConfirmEmail.DELEETED) {
+                throw new ConflictException(`your email was allready ${userExist.confirmEmail}`)
+        }
+
+        //check date
+        if (userExist?.expireDateEmail && userExist?.expireDateEmail > new Date(Date.now())) {
+            throw new ConflictException(this.messageService.messages.user.emailExpired)
+        }
+
+        //resend email 
+        userExist.expireDateEmail = new Date(Date.now() + 5 * 60 * 1000)
+
+        const token = await this.jwtService.sign({ email }, { secret: this.configService.get<string>('SECRET_VER_TOKEN') })
+
+        //send email
+        await this.mailService.sendEmail({
+            to: email,
+            subject: "confirm email",
+            html: `<h1>click on <a href="http://localhost:3000/auth/verify/${token}">link</a></h1>`
+        })
+
+        //save expire date
+        await userExist.save()
+
+        //response
+        return { success: true, message: this.messageService.messages.user.emailSendSuccessFully }
+    }
+
+    //verify email 
     verify = async (token: string) => {
         const { email } = await this.jwtService.verify(token, { secret: this.configService.get<string>('SECRET_VER_TOKEN') })
         const userExist = await this.userRepo.findOne({ email })
@@ -74,6 +111,7 @@ export class AuthService {
 
         // prepare data 
         userExist.confirmEmail = ConfirmEmail.VERIFIED
+        userExist.expireDateEmail = undefined
 
         //save changence
         await userExist.save()
@@ -109,7 +147,7 @@ export class AuthService {
 
     //forget password
     forgetPassword = async (email: string) => {
-        
+
         //check existence
         const userExist = await this.userRepo.findOne({ email })
         if (!userExist) {
@@ -120,7 +158,7 @@ export class AuthService {
         if (userExist?.OTP && userExist?.expireDateOTP > new Date(Date.now())) {
             throw new ConflictException(this.messageService.messages.user.OTP.alreadyExist)
         }
-        
+
         //genetrate OTP
         userExist.OTP = this.OTPService.generateOTP()
         userExist.expireDateOTP = new Date(Date.now() + 15 * 60 * 1000)
@@ -150,7 +188,7 @@ export class AuthService {
             throw new NotFoundException(this.messageService.messages.user.notFound)
         }
 
-        
+
         this.OTPService.verifyOTP(OTP, userExist?.OTP, userExist?.expireDateOTP)
 
         //response
@@ -197,5 +235,5 @@ export class AuthService {
         return { success: true, data: user.status }
     }
 
-    
+
 }
