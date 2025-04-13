@@ -22,23 +22,28 @@ export class AdminService {
     
     //all users
     getAllUsers = async (query: any) => {
-        return await this.userRepo.find().select('-password');
+
+        const users = await this.userRepo.find().select('-password').populate('communities', 'name');
+        if (!users) throw new NotFoundException('No users found');
+
+        return { success: true, data: users };
+
     }
 
     //get user by id
     getUserById = async (id: string) => {
         const userId = new Types.ObjectId(id);
 
-        const user = await this.userRepo.findById(userId).select('-password');
-        if (!user) throw new NotFoundException('User not found');
-        return user;
+        const users = await this.userRepo.findById(userId).select('-password');
+        if (!users) throw new NotFoundException('User not found');
+        return { success: true, data: users };
 
     //chane user role
     }
-        changeUserRole = async (id: string, role: string) => {
+        changeUserRole = async (id: string, roles: string) => {
         const userId = new Types.ObjectId(id);
 
-        const user = await this.userRepo.findByIdAndUpdate(userId, { role }, { new: true });
+        const user = await this.userRepo.findByIdAndUpdate(userId, { roles }, { new: true });
         if (!user) throw new NotFoundException('User not found');
         return { message: 'User role updated', user };
         }
@@ -46,10 +51,16 @@ export class AdminService {
          //delete user
       deleteUser = async (id: string) => {
         const userId = new Types.ObjectId(id);
-
         const user = await this.userRepo.findByIdAndDelete(userId);
         if (!user) throw new NotFoundException('User not found');
-        return { message: 'User deleted successfully' };
+        await this.communityRepo.updateMany({ members: userId }, { $pull: { members: userId } });
+        return { message: 'User deleted and removed from communities successfully' };
+        }
+        //delete fake user
+        deleteunverifiedUser = async () => {
+            const users = await this.userRepo.deleteMany({ confirmEmail: 'PENDING' });
+            if (!users) throw new NotFoundException('No unverified users found');
+            return { message: `${users.deletedCount} unverified users deleted` };
         }
 
     //Community
@@ -66,6 +77,21 @@ export class AdminService {
     getAllCommunities = async (query: any) => {
         return this.communityRepo.find();
         }
+        //delete community
+        deleteCommunity = async (id: string) => {
+            const communityId = new Types.ObjectId(id);
+            const community = await this.communityRepo.findByIdAndDelete(communityId);
+            if (!community) throw new NotFoundException('Community not found');
+            return { message: 'Community deleted successfully' };
+        }
+        //delete empty community
+        deleteEmptyCommunity = async (id: string) => {
+            const communityId = new Types.ObjectId(id);
+            const result = await this.communityRepo.deleteMany({ _id: communityId, members: { $exists: true, $size: 0 } });
+            if (!result.deletedCount) throw new NotFoundException('Community not found or not empty');
+            return { message: `${result.deletedCount} empty communities deleted`};      
+        }
+
         //OPPORTUNITY
 
     //get all opportunities
@@ -74,7 +100,12 @@ export class AdminService {
         }
        
     //DELETE OPPORTUNITY
-    
+        deleteOpportunity = async (id: string) => {
+            const opportunityId = new Types.ObjectId(id);
+            const opportunity = await this.opportunityRepo.findByIdAndDelete(opportunityId);
+            if (!opportunity) throw new NotFoundException('Opportunity not found');
+            return { message: 'Opportunity deleted successfully' };
+        }
         
     
 

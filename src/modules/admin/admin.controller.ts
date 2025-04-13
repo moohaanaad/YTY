@@ -28,6 +28,11 @@ export class AdminController {
         deleteUser(@Param('id') id: string) {
             return this.adminService.deleteUser(id);
         }
+    //delete fake user
+        @Delete('users/unverified')
+        deleteunverifiedUser() {
+            return this.adminService.deleteunverifiedUser();
+        }
 
     //Community
 
@@ -47,6 +52,17 @@ export class AdminController {
         getAllCommunities(@Query() query: any) {
             return this.adminService.getAllCommunities(query);
         }
+    //delete community
+    @Delete('communities/:id')
+        deleteCommunity(@Param('id') id: string) {
+            return this.adminService.deleteCommunity(id);
+        }
+        //delete empty community
+    @Delete('communities/empty/:id')
+        deleteEmptyCommunity(@Param('id') id: string) {
+            return this.adminService.deleteEmptyCommunity(id);
+        }
+
     //opportunity
     
     //get all opportunities
@@ -56,7 +72,10 @@ export class AdminController {
         }
 
         //delete opportunity
-    
+    @Delete('opportunities/:id')
+        deleteOpportunity(@Param('id') id: string) {
+            return this.adminService.deleteOpportunity(id);
+        }
         
         
 
