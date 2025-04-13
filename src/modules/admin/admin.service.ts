@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, Param } from '@nestjs/common';
 import { CommunityRepository, User, UserRepository} from 'src/models';
 import { Opportunity } from 'src/models/opportunity/opportunity.schema';
-import { UserService } from '../user/user.service';
+
 import { Types } from 'mongoose';
 import { OpportunityRepository } from 'src/models/opportunity/opportunity.repository';
 import { MessageService } from 'src/utils';
@@ -14,7 +14,6 @@ export class AdminService {
     constructor(
         private userRepo:UserRepository,
         private communityRepo:CommunityRepository,
-        private userService: UserService,
         private messageService: MessageService,
         private opportunityRepo: OpportunityRepository,
     ){}
