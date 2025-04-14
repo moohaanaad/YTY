@@ -23,6 +23,13 @@ export enum ConfirmEmail {
     DELEETED = 'deleted'
 }
 
+export enum ConfirmVolunteerRequist {
+    PENDING = 'pending',
+    VERIFIED = 'verified',
+    BLOCKED = 'blocked',
+    DELEETED = 'deleted'
+}
+
 export enum joinCommunity {
     PENDING = 'pending',
     JOINED = 'joined',

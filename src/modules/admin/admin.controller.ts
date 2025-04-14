@@ -10,77 +10,80 @@ import { AdminService } from './admin.service';
 @Controller('admin')
 export class AdminController {
     constructor(
-         private adminService:AdminService) {}
+        private adminService: AdminService) { }
 
-    //User
+    //-----------------USER-----------------
+
     //get all users
-     @Get('users')
-        getAllUsers(@Query() query: any) {
-            return this.adminService.getAllUsers(query);
-            }
+    @Get('users')
+    getAllUsers(@Query() query: any) {
+        return this.adminService.getAllUsers(query);
+    }
+
     //change user role
     @Patch('users/:id/role')
-        changeUserRole(@Param('id') id: string, @Body('role') role: string) {
-            return this.adminService.changeUserRole(id, role);
-        }
-    //delete user
-        @Delete('users/:id')
-        deleteUser(@Param('id') id: string) {
-            return this.adminService.deleteUser(id);
-        }
-    //delete fake user
-        @Delete('users/unverified')
-        deleteunverifiedUser() {
-            return this.adminService.deleteunverifiedUser();
-        }
+    changeUserRole(@Param('id') id: string, @Body('role') role: string) {
+        return this.adminService.changeUserRole(id, role);
+    }
 
-    //Community
+    //delete user
+    @Delete('users/:id')
+    deleteUser(@Param('id') id: string) {
+        return this.adminService.deleteUser(id);
+    }
+
+    //delete fake user
+    @Delete('users/unverified')
+    deleteunverifiedUser() {
+        return this.adminService.deleteunverifiedUser();
+    }
+
+
+    //-----------------COMMUNITY-----------------
 
     //get all communities that have user in it
     @Get('communities/with-members')
-        getCommunitiesWithMembers(@Query() query: any) {
-            return this.adminService.getCommunitiesWithMembers(query);
-        }
-      
+    getCommunitiesWithMembers(@Query() query: any) {
+        return this.adminService.getCommunitiesWithMembers(query);
+    }
+
     //get community that have no members
     @Get('communities/no-members')
-        getCommunitiesWithoutMembers() {
-            return this.adminService.getCommunitiesWithoutMembers({});
-        } 
-        //get all communities
+    getCommunitiesWithoutMembers() {
+        return this.adminService.getCommunitiesWithoutMembers({});
+    }
+
+    //get all communities
     @Get('communities')
-        getAllCommunities(@Query() query: any) {
-            return this.adminService.getAllCommunities(query);
-        }
+    getAllCommunities(@Query() query: any) {
+        return this.adminService.getAllCommunities(query);
+    }
+
     //delete community
     @Delete('communities/:id')
-        deleteCommunity(@Param('id') id: string) {
-            return this.adminService.deleteCommunity(id);
-        }
-        //delete empty community
-    @Delete('communities/empty/:id')
-        deleteEmptyCommunity(@Param('id') id: string) {
-            return this.adminService.deleteEmptyCommunity(id);
-        }
+    deleteCommunity(@Param('id') id: string) {
+        return this.adminService.deleteCommunity(id);
+    }
 
-    //opportunity
-    
+    //delete empty community
+    @Delete('communities/empty/:id')
+    deleteEmptyCommunity(@Param('id') id: string) {
+        return this.adminService.deleteEmptyCommunity(id);
+    }
+
+
+    //-----------------OPPORTUNITY-----------------
+
     //get all opportunities
     @Get('opportunities')
-        getAllOpportunities(@Query() query: any) {
-            return this.adminService.getAllOpportunities(query);
-        }
+    getAllOpportunities(@Query() query: any) {
+        return this.adminService.getAllOpportunities(query);
+    }
 
-        //delete opportunity
+    //delete opportunity
     @Delete('opportunities/:id')
-        deleteOpportunity(@Param('id') id: string) {
-            return this.adminService.deleteOpportunity(id);
-        }
-        
-        
-
-    
-
-
+    deleteOpportunity(@Param('id') id: string) {
+        return this.adminService.deleteOpportunity(id);
+    }
 }
 

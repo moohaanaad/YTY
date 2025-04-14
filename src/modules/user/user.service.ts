@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { deleteFile } from 'src/common';
 import { UserRepository } from 'src/models/user/user.repository';
 import { MessageService } from 'src/utils';
@@ -50,9 +50,9 @@ export class UserService {
                 user.profileImage = defaultFemaleProfile
             }
         }
-        
+
         if (interested) user.interested = JSON.parse(interested);
-        
+
         //preapre data
         const updateableFields = {
             firstName,
@@ -63,7 +63,7 @@ export class UserService {
             bio,
             education,
             skill,
-            
+
         };
 
 
@@ -89,20 +89,35 @@ export class UserService {
     }
 
     //delete user profile
-    deleteProfile = async(req: any) => {
+    deleteProfile = async (req: any) => {
         const { user } = req
         const defaultFemaleProfile = "uploads\\user\\Female Avatar.png"
         const defaultMaleProfile = "uploads\\user\\Male Avatar.png"
         if (![defaultFemaleProfile, defaultMaleProfile].includes(user.profileImage)) {
             deleteFile(user.profileImage)
         }
-        
+
         const deletedUser = await this.userRepo.findByIdAndDelete(user._id)
         console.log(user._id);
-        
+
         if (!deletedUser) {
             return new BadRequestException()
         }
-        return { success: true , data: deletedUser}
+        return { success: true, data: deletedUser }
     }
+
+    //become a volunteer
+    BecomeVolunteer = async (req: any, body: any, file: Express.Multer.File) => {
+        const { user } = req
+
+        //check existence
+        const userExist = await this.userRepo.findById(user._id).select('-password')
+        if (!userExist) throw new NotFoundException(this.messageService.messages.user.notFound)
+        
+        await userExist.save()
+
+        return { success: true, data: userExist}
+
+    }
+
 }

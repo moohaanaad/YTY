@@ -7,6 +7,7 @@ import { deleteFile, dS, fileValidation, fileValidationTypes } from 'src/common'
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { errorMessages } from 'src/common/errorhandling/prepareErrorMessage';
+import { BecomeVolunteerDto } from './dto/becomeVolunteer.dto';
 
 @Controller('user')
 @UseGuards(AuthGuard)
@@ -60,5 +61,16 @@ export class UserController {
     @Delete()
     deleteProfile(@Req() req: any) {
         return this.userSerive.deleteProfile(req)
+    }
+
+    //become a volunteer
+    @UseInterceptors(
+        FileInterceptor('image', {
+          storage: dS('uploads/user/volunteer'),
+          fileFilter: fileValidation(fileValidationTypes.image)
+        }))
+    @Put('become-volunteer')
+    BecomeVolunteer(@Req() req: any, @Body() body: BecomeVolunteerDto, @UploadedFile() file:Express.Multer.File) {
+        return this.userSerive.BecomeVolunteer(req, body, file)
     }
 }

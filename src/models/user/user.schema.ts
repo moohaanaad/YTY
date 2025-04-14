@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Mongoose, Types } from "mongoose";
-import { ConfirmEmail, Gender, UserRole, UserStatus } from "src/utils/enums/user.enum";
+import { ConfirmEmail, ConfirmVolunteerRequist, Gender, UserRole, UserStatus } from "src/utils/enums/user.enum";
 import { joinCommunities } from "./subdocumnet/joinCommunity";
+import { IDcardImages } from "./subdocumnet/IDcard";
 
 @Schema({ timestamps: true })
 export class User {
@@ -60,18 +61,25 @@ export class User {
 
     @Prop({ tpye: Date })
     expireDateOTP: Date
-
+    
+    @Prop({ type: [String] })
+    interested: string[]
+    
+    @Prop({ type: [Object] })
+    communities: joinCommunities[]
+    
+    //volunteer
     @Prop({ type: String })
     education: string
 
-    @Prop({ type: String })
-    skill: string
-
     @Prop({ type: [String] })
-    interested: string[]
+    skills: string[]
 
-    @Prop({ type: [Object] })
-    communities: joinCommunities[]
+    @Prop({ type: Object })
+    IDImages:IDcardImages
+
+    @Prop({ type: String, enum:Object.values(ConfirmVolunteerRequist)})
+    vulonteerReqStatus:string
 
     readonly _id: Types.ObjectId
 
