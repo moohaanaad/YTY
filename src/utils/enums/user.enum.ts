@@ -26,8 +26,7 @@ export enum ConfirmEmail {
 export enum ConfirmVolunteerRequist {
     PENDING = 'pending',
     VERIFIED = 'verified',
-    BLOCKED = 'blocked',
-    DELEETED = 'deleted'
+    REJECTED = 'rejected',
 }
 
 export enum joinCommunity {

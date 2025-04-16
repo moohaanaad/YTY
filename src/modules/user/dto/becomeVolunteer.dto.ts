@@ -1,13 +1,13 @@
 import { Type } from "class-transformer";
-import { IsArray, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsString } from "class-validator";
 
 class IDImagesDto {
+    
+    @IsNotEmpty({ message: 'Front ID card image is required' })
+  frontIdCardImage: string;
 
-    @IsString()
-    frontIdCardImage:string
-
-    @IsString()
-    backIdCardImage:string
+  @IsNotEmpty({ message: 'Back ID card image is required' })
+  backIdCardImage: string;
 
 }
 
@@ -17,9 +17,9 @@ export class BecomeVolunteerDto {
     @IsString()
     education:string 
 
-    @IsArray()
+    
     @IsString({ each: true})
-    skills:string []
+    skills:string[] 
 
     @Type(() => IDImagesDto)
     IDImages: IDImagesDto

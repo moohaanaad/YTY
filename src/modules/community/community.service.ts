@@ -127,7 +127,6 @@ export class CommunityService {
             if (file) {
                 deleteFile(file.path)
             }
-            console.log(error);
             
             throw new BadRequestException(error)
         }

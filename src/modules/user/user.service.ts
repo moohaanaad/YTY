@@ -3,7 +3,7 @@ import { deleteFile } from 'src/common';
 import { UserRepository } from 'src/models/user/user.repository';
 import { MessageService } from 'src/utils';
 import { CheckExistService } from './checkExist.service';
-import { Gender } from 'src/utils/enums/user.enum';
+import { ConfirmVolunteerRequist, Gender } from 'src/utils/enums/user.enum';
 
 @Injectable()
 export class UserService {
@@ -107,17 +107,59 @@ export class UserService {
     }
 
     //become a volunteer
-    BecomeVolunteer = async (req: any, body: any, file: Express.Multer.File) => {
-        const { user } = req
+    BecomeVolunteer = async (req: any, body: any, files: { frontIdCardImage?: Express.Multer.File, backIdCardImage?: Express.Multer.File }) => {
+        try {
+            const { user } = req
+            let { education, skills, IDImages } = body
 
-        //check existence
-        const userExist = await this.userRepo.findById(user._id).select('-password')
-        if (!userExist) throw new NotFoundException(this.messageService.messages.user.notFound)
-        
-        await userExist.save()
+            //check if user req before
+            if(user.vulonteerReqStatus == ConfirmVolunteerRequist.PENDING){
+                if(IDImages){
+                    deleteFile(IDImages.frontIdCardImage)
+                    deleteFile(IDImages.backIdCardImage)
+                }
+                return { message: 'you are already make requist to be volunteer please wait admins approve'}
+            }
+            if(user.vulonteerReqStatus == ConfirmVolunteerRequist.REJECTED){
+                if(IDImages){
+                    deleteFile(IDImages.frontIdCardImage)
+                    deleteFile(IDImages.backIdCardImage)
+                }
+                return { message: 'you are rejected'}
+            }
 
-        return { success: true, data: userExist}
 
+            //parse data
+            skills = JSON.parse(skills);
+
+            //repare data
+            const updateableFields = {
+                IDImages,
+                skills,
+                education,
+
+            };
+
+
+            //change data
+            for (const [key, value] of Object.entries(updateableFields)) {
+                if (value !== undefined) {
+                    user[key] = value;
+                }
+            }
+            user.vulonteerReqStatus = ConfirmVolunteerRequist.PENDING
+
+            //save data
+            await user.save()
+
+            //response
+            return { success: true, data: user }
+
+        } catch (error) {
+            deleteFile(body.IDImages.frontIdCardImage)
+            deleteFile(body.IDImages.backIdCardImage)
+            throw new BadRequestException(error)
+        }
     }
 
 }

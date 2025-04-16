@@ -1,8 +1,8 @@
-import { BadRequestException, Body, Controller, Delete, Get, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Put, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/guard/authentication.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { deleteFile, dS, fileValidation, fileValidationTypes } from 'src/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
@@ -64,13 +64,28 @@ export class UserController {
     }
 
     //become a volunteer
-    @UseInterceptors(
-        FileInterceptor('image', {
-          storage: dS('uploads/user/volunteer'),
-          fileFilter: fileValidation(fileValidationTypes.image)
+    @UseInterceptors(FileFieldsInterceptor(
+        [
+            { name: 'frontIdCardImage', maxCount: 1 },
+            { name: 'backIdCardImage', maxCount: 1 },
+        ],
+        {
+            storage: dS('uploads/user/volunteer')
         }))
     @Put('become-volunteer')
-    BecomeVolunteer(@Req() req: any, @Body() body: BecomeVolunteerDto, @UploadedFile() file:Express.Multer.File) {
-        return this.userSerive.BecomeVolunteer(req, body, file)
+    BecomeVolunteer(
+        @Req() req: any,
+        @Body() body: BecomeVolunteerDto,
+        @UploadedFiles() files: { frontIdCardImage?: Express.Multer.File, backIdCardImage?: Express.Multer.File }
+    ) {
+        // Handle files
+        body.IDImages = {
+            frontIdCardImage: files.frontIdCardImage?.[0]?.path,
+            backIdCardImage: files.backIdCardImage?.[0]?.path,
+          };
+        console.log(body.IDImages);
+        
+        
+        return this.userSerive.BecomeVolunteer(req, body, files)
     }
 }
