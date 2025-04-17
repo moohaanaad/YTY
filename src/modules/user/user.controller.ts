@@ -83,7 +83,6 @@ export class UserController {
             frontIdCardImage: files.frontIdCardImage?.[0]?.path,
             backIdCardImage: files.backIdCardImage?.[0]?.path,
           };
-        console.log(body.IDImages);
         
         
         return this.userSerive.BecomeVolunteer(req, body, files)

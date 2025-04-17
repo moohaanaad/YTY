@@ -98,7 +98,7 @@ export class UserService {
         }
 
         const deletedUser = await this.userRepo.findByIdAndDelete(user._id)
-        console.log(user._id);
+        
 
         if (!deletedUser) {
             return new BadRequestException()

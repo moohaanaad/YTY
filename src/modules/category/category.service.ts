@@ -30,7 +30,6 @@ export class CategoryService {
             deleteFile(file.path)
             throw new ConflictException(this.messageService.messages.category.alreadyExist)
         }
-        console.log(req.user);
 
         //save data
         body.slug = slugify(name)
@@ -123,17 +122,17 @@ export class CategoryService {
             //prepare data
             const subcategoriesIds = SubcategoryExist.map((sub) => sub._id)
             const imagesPath = SubcategoryExist.map((sub) => sub.image)
-            console.log(subcategoriesIds);
+           
 
             const communityExist = await this.communityRepo.find({ category: categoryId })
-            console.log(communityExist);
+            
 
             //prepare communities data
             if (communityExist) {
                 const communityIds = communityExist.map((com) => com._id)
                 const communityImages = communityExist.map((com) => com.image)
                 const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg'
-                console.log(communityIds);
+                
                 //delete all communities related by subcategory
                 await this.communityRepo.deleteMany({ _id: { $in: communityIds } })
 

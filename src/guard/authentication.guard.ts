@@ -17,9 +17,9 @@ export class AuthGuard implements CanActivate {
   ): Promise<boolean> {
 
     const request = context.switchToHttp().getRequest();
-    const { token } = request.headers
-   
-    
+    let { authorization:token } = request.headers
+     
+    token = token.split(" ")[1]
 
     try {
       //check token exist
@@ -46,6 +46,5 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       throw new UnauthorizedException(error)
     }
-
   }
 }

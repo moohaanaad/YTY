@@ -59,7 +59,13 @@ export class SubcategoryService {
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
 
-        const subcategoryExist = await this.subcategoryRepo.find({ categoryId: categoryId })
+        const subcategoryExist = await this.subcategoryRepo.find(
+            { categoryId: categoryId }
+
+        ).populate({
+            path: 'categoryId',
+            select: "name image slug -_id"
+        })
         if (!subcategoryExist) {
             throw new NotFoundException(this.messageService.messages.subcategory.empty)
         }
@@ -72,7 +78,12 @@ export class SubcategoryService {
         const { subcategoryId } = param
 
         //check existence 
-        const subcategoryExist = await this.subcategoryRepo.findById(subcategoryId)
+        const subcategoryExist = await this.subcategoryRepo.findById(
+            subcategoryId)
+            .populate({
+                path: 'categoryId',
+                select: "name image slug -_id"
+            })
         if (!subcategoryExist) {
             throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
@@ -89,7 +100,12 @@ export class SubcategoryService {
         const { name } = body
 
         //check existence
-        const subcategoryExist = await this.subcategoryRepo.findOne({ _id: subcategoryId, createdBy: user._id })//todo make createdBy who can update his subcategory
+        const subcategoryExist = await this.subcategoryRepo.findOne(
+            { _id: subcategoryId, createdBy: user._id }
+        ).populate({
+            path: 'categoryId',
+            select: "name image slug -_id"
+        })
         if (!subcategoryExist) {
             if (file) {
                 deleteFile(file.path)
@@ -140,12 +156,12 @@ export class SubcategoryService {
 
             const communityIds = communityExist.map((com) => com._id)
             const communityImage = communityExist.map((com) => com.image)
-            const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg' 
+            const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg'
 
             await this.communityRepo.deleteMany({ _id: { $in: communityIds } })
 
             for (let i = 0; i < communityImage.length; i++) {
-                if(communityImage[i] !== defaultCommunityImage) {
+                if (communityImage[i] !== defaultCommunityImage) {
                     deleteFile(communityImage[i])
                 }
             }

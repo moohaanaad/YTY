@@ -20,7 +20,13 @@ export class CommunityService {
         const { name } = body
 
         //check existence
-        const communityExist = await this.communityRepo.findOne({ name })
+        const communityExist = await this.communityRepo.findOne({ name }).populate({
+            path: 'category',
+            select: "name image slug -_id"
+        }).populate({
+            path: 'subcategory',
+            select: "name image slug -_id"
+        })
         if (communityExist) {
             if (file) {
                 deleteFile(file?.path)
@@ -63,7 +69,13 @@ export class CommunityService {
             const { name, desc, limitOfUsers, roles, location, status, date, types } = body
 
             //check existence 
-            const communityExist = await this.communityRepo.findById(communityId)
+            const communityExist = await this.communityRepo.findById(communityId).populate({
+                path: 'category',
+                select: "name image slug -_id"
+            }).populate({
+                path: 'subcategory',
+                select: "name image slug -_id"
+            })
             if (!communityExist) {
                 if (file) {
                     deleteFile(file?.path)
@@ -122,12 +134,12 @@ export class CommunityService {
 
             //response
             return { success: true, data: communityExist }
-            
+
         } catch (error) {
             if (file) {
                 deleteFile(file.path)
             }
-            
+
             throw new BadRequestException(error)
         }
 
@@ -136,7 +148,13 @@ export class CommunityService {
     //get all communities
     getAllCommunities = async () => {
 
-        const communityExist = await this.communityRepo.find()
+        const communityExist = await this.communityRepo.find().populate({
+            path: 'category',
+            select: "name image slug -_id"
+        }).populate({
+            path: 'subcategory',
+            select: "name image slug -_id"
+        })
         if (!communityExist) {
             return { message: this.messageService.messages.community.empty }
         }
@@ -151,8 +169,8 @@ export class CommunityService {
         if (!user?.interested) {
             throw new NotFoundException("you do not have any interests")
         }
-        console.log(user.interested);
-        
+
+
         //get community with same interests
         const communitiesExist = await this.communityRepo.aggregate(user.interested)
         if (!communitiesExist) {
@@ -172,7 +190,13 @@ export class CommunityService {
             throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
 
-        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId })
+        const communityExist = await this.communityRepo.find({ subcategory: subcategoryId }).populate({
+            path: 'category',
+            select: "name image slug -_id"
+        }).populate({
+            path: 'subcategory',
+            select: "name image slug -_id"
+        })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
         }
@@ -185,8 +209,11 @@ export class CommunityService {
         const { user } = req
 
         //check existence
-        const communitiesExist = await this.communityRepo.find({ members: user._id })
-        console.log(communitiesExist);
+        const communitiesExist = await this.communityRepo.find({ members: user._id }).populate({
+            path: 'subcategory',
+            select: "name image slug -_id"
+        })
+
         if (!communitiesExist) {
             throw new NotFoundException(this.messageService.messages.community.empty)
         }
@@ -200,7 +227,16 @@ export class CommunityService {
         const { user } = req
         const { communityId } = param
 
-        const communityExist = await this.communityRepo.findById(communityId)
+        const communityExist = await this.communityRepo.findById(communityId).populate({
+            path: 'category',
+            select: "name image slug -_id"
+        }).populate({
+            path: 'subcategory',
+            select: "name image slug -_id"
+        }).populate({
+           path: 'members',
+           select: "firstName lastName email userName profileImage" 
+        })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
         }

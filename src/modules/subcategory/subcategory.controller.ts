@@ -6,15 +6,19 @@ import { CreateSubcategoryDto } from "./dto/createSubcategory.dto"
 import { dS, fileValidation, fileValidationTypes } from "src/common"
 import { CategoryParamDto } from "../category/dto/categoryParam.dto"
 import { SubcategoryParamDto } from "./dto/subcategoryParam.dto"
+import { RolesGuard } from "src/guard/roles.guard"
+import { Roles } from "../authorization/roles.decorator"
+import { UserRole } from "src/utils"
 
 
 @Controller('subcategory')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard , RolesGuard)
 export class SubcategoryController {
     constructor(private subcategoryService: SubcategoryService) { }
 
     //create subcategory
     @Post()
+    @Roles(UserRole.ADMIN)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/subcategory'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -37,6 +41,7 @@ export class SubcategoryController {
 
     //update subcategory
     @Put(':subcategoryId')
+    @Roles(UserRole.ADMIN)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/subcategory'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -47,6 +52,7 @@ export class SubcategoryController {
 
     //delete subcategory
     @Delete(':subcategoryId')
+    @Roles(UserRole.ADMIN)
     deleteSubcategory(@Param() param: SubcategoryParamDto, @Req() req: any){
         return this.subcategoryService.deleteSubcategory(param, req)
     }

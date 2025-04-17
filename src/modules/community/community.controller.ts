@@ -16,7 +16,7 @@ import { UserRole } from "src/utils";
 
 
 @Controller('community')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class CommunityController {
 
     constructor(private communityService: CommunityService) { }
@@ -24,7 +24,6 @@ export class CommunityController {
     //create community
     @Post()
     @Roles(UserRole.ADMIN, UserRole.VULONTEER)
-    @UseGuards(RolesGuard)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -63,6 +62,7 @@ export class CommunityController {
 
     //update community 
     @Put(':communityId')
+    @Roles(UserRole.ADMIN, UserRole.VULONTEER)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -139,6 +139,7 @@ export class CommunityController {
 
     //delete community
     @Delete(':communityId')
+    @Roles(UserRole.ADMIN, UserRole.VULONTEER)
     deleteCommunity(
         @Param() param: any,
         @Req() req: any

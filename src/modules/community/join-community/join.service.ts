@@ -165,12 +165,12 @@ export class JoinService {
         const userCommunityIndex = user.communities.findIndex(
             (com) => com.community.toString() == communityId && com.status == joinCommunity.JOINED
         )
-        console.log(userCommunityIndex);
+       
         
         const communityUserIndex = communityExist.members.findIndex(
             (member) => member.toString() == user._id
         )
-        console.log(communityUserIndex);
+        
 
         //if user not found
         if(userCommunityIndex == -1) {
