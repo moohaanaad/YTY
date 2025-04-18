@@ -10,35 +10,38 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { dS, fileValidation, fileValidationTypes } from 'src/common';
 
 
-@Controller('opportunities')
+@Controller('opportunity')
+@UseGuards(AuthGuard, RolesGuard)
 export class OpportunitiesController {
   constructor(private readonly opportunitiesService: OpportunitiesService) { }
 
+  //create opportunity
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.VULONTEER) // Only Volunteers & Admins can create opportunities
-  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.VULONTEER)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: dS('uploads/opportunity'),
       fileFilter: fileValidation(fileValidationTypes.image)
     }))
-  async createOpportunity(@Body() body: CreateOpportunityDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-    return this.opportunitiesService.createOpportunity(body, req, file);
+  async createOpportunity(@Req() req: any, @Body() body: CreateOpportunityDto, @UploadedFile() file: Express.Multer.File) {
+    return this.opportunitiesService.createOpportunity(req, body, file);
   }
 
+  //get all opportunities
   @Get()
   async getOpportunities() {
     return this.opportunitiesService.getOpportunities();
   }
 
+  //get specific opportunity
   @Get(':opportunityId')
   async getSpecificOpportunity(@Param() Param: string) {
     return this.opportunitiesService.getSpecificOpportunity(Param);
   }
 
+  //update opportunity
   @Put(':opportunityId')
-  @Roles(UserRole.VULONTEER, UserRole.ADMIN) // Only the creator can update
-  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.VULONTEER, UserRole.ADMIN)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: dS('uploads/opportunity'),
@@ -48,9 +51,9 @@ export class OpportunitiesController {
     return this.opportunitiesService.updateOpportunity(param, req, body, file);
   }
 
-  @Delete(':id')
-  @Roles(UserRole.VULONTEER, UserRole.ADMIN) // Only the creator can delete
-  @UseGuards(AuthGuard, RolesGuard)
+  //delete opportunity
+  @Delete(':opportunityId')
+  @Roles(UserRole.VULONTEER, UserRole.ADMIN)
   async deleteOpportunity(@Param() param: any, @Req() req: any,) {
     return this.opportunitiesService.deleteOpportunity(param, req);
   }

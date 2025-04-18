@@ -2,9 +2,12 @@ import { Body, Controller, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { JoinService } from './join.service';
 import { CommunityParamDto } from '../dto/communityParam.dto';
 import { AuthGuard } from 'src/guard/authentication.guard';
+import { RolesGuard } from 'src/guard/roles.guard';
+import { Roles, ROLES_KEY } from 'src/modules/authorization/roles.decorator';
+import { UserRole } from 'src/utils';
 
 @Controller('community')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class JoinController {
     constructor(private joinService: JoinService) { }
 
@@ -18,6 +21,7 @@ export class JoinController {
     }
 
     //handle join community request
+    @Roles(UserRole.VULONTEER)
     @Put('handle-request/:communityId')
     handleRequest(
         @Param() param: any,

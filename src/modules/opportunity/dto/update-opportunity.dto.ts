@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsOptional, IsString, IsDate } from 'class-validator';
 
 export class UpdateOpportunityDto {
@@ -11,5 +12,6 @@ export class UpdateOpportunityDto {
 
   @IsOptional()
   @IsDate()
-  deadline?: Date;
+  @Type(() => Date)
+  deadline: Date;
 }

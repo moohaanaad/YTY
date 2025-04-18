@@ -11,25 +11,29 @@ export class ReactionService {
     ) { }
 
     makeReact = async (param: any, req: any, body: any) => {
-        const { postId } = param
+        const { opportunityId } = param
         const { user } = req
         const { react } = body
 
         //check post existence
-        let opportunityExist = await this.opportunityRepo.findById(postId)
+        let opportunityExist = await this.opportunityRepo.findById(opportunityId)
 
         if (!opportunityExist) {
             throw new NotFoundException(this.messageService.messages.opportunity.notFound)
         }
 
         //check react existence
-        const reactExist = opportunityExist.react.find((r) => r.user == user._id)
-
+        
+        const reactExist = opportunityExist.react.find((r) => r.user.toString() == user._id)
+        console.log(reactExist);
+        
         //checking data
         if (reactExist && reactExist.react == react) {
 
-            opportunityExist.react = opportunityExist.react.filter((r) => r.user != user._id)
-
+            opportunityExist.react = opportunityExist.react.filter((r) => r.user.toString() != user._id)
+            console.log(opportunityExist.react);
+            console.log(user._id);
+            
         } else if (reactExist) {
 
             reactExist.react = react

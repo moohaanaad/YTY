@@ -5,8 +5,8 @@ import { Roles } from '../authorization/roles.decorator';
 import { UserRole } from 'src/utils';
 import { AdminService } from './admin.service';
 
-@Roles(UserRole.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 @Controller('admin')
 export class AdminController {
     constructor(

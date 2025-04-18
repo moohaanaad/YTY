@@ -11,7 +11,7 @@ export class Opportunity {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ type: String, trim: true, required: true })
+  @Prop({ type: String, trim: true })
   slug: string
 
   @Prop({ required: true })

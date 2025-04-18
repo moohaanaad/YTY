@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { ReactionService } from './reaction.service';
 import { OpportunityParamDto } from '../dto/opportunityParam.dto';
 import { ReactDto } from '../dto/react.dto';
+import { AuthGuard } from 'src/guard/authentication.guard';
 
-@Controller('reaction')
+@UseGuards(AuthGuard)
+@Controller('opportunity')
 export class ReactionController {
 
     constructor(private reactService: ReactionService) { }
@@ -11,6 +13,7 @@ export class ReactionController {
     //make react 
     @Put("react/:opportunityId")
     makeReact(@Param() param: OpportunityParamDto, @Req() req: any, @Body() body: ReactDto) {
+        
         return this.reactService.makeReact(param, req, body)
     }
 
