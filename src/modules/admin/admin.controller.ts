@@ -15,19 +15,25 @@ export class AdminController {
     //-----------------USER-----------------
 
     //get all users
-    @Get('users')
-    getAllUsers(@Query() query: any) {
-        return this.adminService.getAllUsers(query);
+    @Get('user')
+    getAllUsers() {
+        return this.adminService.getAllUsers();
+    }
+
+    //get specific user
+    @Get('user/:userId')
+    getSpecificUser(@Param() param: any) {
+        return this.adminService.getSpecificUser(param);
     }
 
     //change user role
-    @Patch('users/:id/role')
+    @Patch('user/:id/role')
     changeUserRole(@Param('id') id: string, @Body('role') role: string) {
         return this.adminService.changeUserRole(id, role);
     }
 
     //delete user
-    @Delete('users/:id')
+    @Delete('user/:id')
     deleteUser(@Param('id') id: string) {
         return this.adminService.deleteUser(id);
     }
@@ -35,7 +41,7 @@ export class AdminController {
     //delete fake user
     @Delete('users/unverified')
     deleteunverifiedUser() {
-        return this.adminService.deleteunverifiedUser();
+        return this.adminService.deleteUnverifiedUser();
     }
 
 
@@ -43,14 +49,14 @@ export class AdminController {
 
     //get all communities that have user in it
     @Get('communities/with-members')
-    getCommunitiesWithMembers(@Query() query: any) {
-        return this.adminService.getCommunitiesWithMembers(query);
+    getCommunitiesWithMembers() {
+        return this.adminService.getCommunitiesWithMembers();
     }
 
     //get community that have no members
     @Get('communities/no-members')
     getCommunitiesWithoutMembers() {
-        return this.adminService.getCommunitiesWithoutMembers({});
+        return this.adminService.getCommunitiesWithoutMembers();
     }
 
     //get all communities

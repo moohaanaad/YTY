@@ -82,6 +82,7 @@ export class User {
     vulonteerReqStatus:string
 
     readonly _id: Types.ObjectId
+    readonly createdAt: Date
 
 }
 export type userDocument = User & Document

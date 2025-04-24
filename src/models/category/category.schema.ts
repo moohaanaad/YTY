@@ -9,14 +9,17 @@ export class Category {
 
     @Prop({ type: String, trim: true, unique: true, required: true })
     slug: string
-    
+
+    @Prop({ type: String, trim: true, required: true })
+    desc:string
+
     @Prop({ type: String, required: true })
     image: string
 
-    @Prop({ type: Types.ObjectId, ref:'User', required: true })
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     createdBy: Types.ObjectId
 
-    @Prop({ type: Types.ObjectId, ref:'User', required: true })
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     updatedBy: Types.ObjectId
 }
 

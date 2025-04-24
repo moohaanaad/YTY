@@ -16,12 +16,12 @@ export class AuthGuard implements CanActivate {
     context: ExecutionContext,
   ): Promise<boolean> {
 
+    try {
     const request = context.switchToHttp().getRequest();
     let { authorization:token } = request.headers
      
-    token = token.split(" ")[1]
-
-    try {
+    
+      token = token.split(" ")[1]
       //check token exist
       if (!token) {
         throw new UnauthorizedException()

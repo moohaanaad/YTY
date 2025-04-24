@@ -75,7 +75,7 @@ export class CategoryService {
     //update category
     updateCategory = async (param: any, body: any, req: any, file: Express.Multer.File) => {
         const { user } = req
-        const { name } = body
+        const { name, desc } = body
         const { categoryId } = param
         //check existence 
         const categoryExist = await this.categoryRepo.findById(categoryId)
@@ -95,6 +95,9 @@ export class CategoryService {
             }
             categoryExist.name = name
             categoryExist.slug = slugify(name)
+        }
+        if (desc && desc !== categoryExist.desc) {
+            categoryExist.desc = desc
         }
         if (file) {
             deleteFile(categoryExist?.image)
@@ -122,17 +125,17 @@ export class CategoryService {
             //prepare data
             const subcategoriesIds = SubcategoryExist.map((sub) => sub._id)
             const imagesPath = SubcategoryExist.map((sub) => sub.image)
-           
+
 
             const communityExist = await this.communityRepo.find({ category: categoryId })
-            
+
 
             //prepare communities data
             if (communityExist) {
                 const communityIds = communityExist.map((com) => com._id)
                 const communityImages = communityExist.map((com) => com.image)
                 const defaultCommunityImage = 'uploads\\community\\Community-Avatar.jpg'
-                
+
                 //delete all communities related by subcategory
                 await this.communityRepo.deleteMany({ _id: { $in: communityIds } })
 

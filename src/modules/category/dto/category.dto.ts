@@ -7,4 +7,9 @@ export class CreateCategoryDto {
     @MinLength(2)
     @MaxLength(20)
     name: string
+
+    @IsString()
+    @MinLength(2)
+    @MaxLength(200)
+    desc: string
 }
