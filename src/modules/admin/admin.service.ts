@@ -128,23 +128,42 @@ export class AdminService {
     deleteCommunity = async (id: string) => {
         const communityId = new Types.ObjectId(id);
 
+
+        //remove community from all users that was used
+        await this.userRepo.updateMany({ communities: communityId }, { $pull: { communities: communityId } });
+        
         // check existence and delete 
         const community = await this.communityRepo.findByIdAndDelete(communityId);
+        
         if (!community) throw new NotFoundException('Community not found');
 
         return { success: true, message: 'Community deleted successfully' };
     }
 
     //delete empty community
-    deleteEmptyCommunity = async (id: string) => {
-        const communityId = new Types.ObjectId(id);
-        const result = await this.communityRepo.deleteMany({
-            _id: communityId, members: { $exists: true, $size: 0 }
-        });
-        if (!result.deletedCount) 
-            throw new NotFoundException('Community not found or not empty');
-        return { message: `${result.deletedCount} empty communities deleted` };
-    }
+    deleteEmptyCommunity = async () => {
+
+        //find empty communities first
+        const emptyCommunities = await this.communityRepo.find({ members: { $exists: true, $size: 0 } });
+      
+        if (!emptyCommunities || emptyCommunities.length === 0) {
+          throw new NotFoundException('No empty communities found');
+        }
+        
+        //gets their IDs
+        const emptyIds = emptyCommunities.map(c => c._id);
+      
+        //remove these community IDs from users
+        await this.userRepo.updateMany({ communities: { $in: emptyIds } },{ $pull: { communities: { $in: emptyIds } } }
+        );
+      
+        //delete the communities
+        const result = await this.communityRepo.deleteMany({ _id: { $in: emptyIds } });
+      
+        return {success: true,message: `${result.deletedCount} empty communities deleted`,deletedCommunityIds: emptyIds,
+        };
+      };
+      
 
     //-----------------OPPORTUNITY-----------------
 
