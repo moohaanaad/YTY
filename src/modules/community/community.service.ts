@@ -154,6 +154,12 @@ export class CommunityService {
         }).populate({
             path: 'subcategory',
             select: "name image slug -_id"
+        }).populate({
+            path: 'volunteer',
+            select: "firstName lastName userName profileImage -_id"
+        }).populate({
+            path: 'askTOJoin',
+            select: "firstName lastName userName profileImage -_id"
         })
         if (!communityExist) {
             return { message: this.messageService.messages.community.empty }
@@ -196,6 +202,12 @@ export class CommunityService {
         }).populate({
             path: 'subcategory',
             select: "name image slug -_id"
+        }).populate({
+            path: 'volunteer',
+            select: "firstName lastName userName profileImage -_id"
+        }).populate({
+            path: 'askTOJoin',
+            select: "firstName lastName userName profileImage -_id"
         })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
@@ -204,14 +216,20 @@ export class CommunityService {
         return { succeess: true, data: communityExist }
     }
 
-    //get all communities of specific user
-    userCommunities = async (req: any) => {
+    //get all communities of specific volunteer
+    volunteerCommunities = async (req: any) => {
         const { user } = req
 
         //check existence
         const communitiesExist = await this.communityRepo.find({ members: user._id }).populate({
             path: 'subcategory',
             select: "name image slug -_id"
+        }).populate({
+            path: 'volunteer',
+            select: "firstName lastName userName profileImage -_id"
+        }).populate({
+            path: 'askTOJoin',
+            select: "firstName lastName userName profileImage -_id"
         })
 
         if (!communitiesExist) {
@@ -236,6 +254,12 @@ export class CommunityService {
         }).populate({
            path: 'members',
            select: "firstName lastName email userName profileImage" 
+        }).populate({
+            path: 'volunteer',
+            select: "firstName lastName userName profileImage -_id"
+        }).populate({
+            path: 'askTOJoin',
+            select: "firstName lastName userName profileImage -_id"
         })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)

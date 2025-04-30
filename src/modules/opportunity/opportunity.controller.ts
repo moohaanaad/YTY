@@ -33,6 +33,11 @@ export class OpportunitiesController {
     return this.opportunitiesService.getOpportunities();
   }
 
+  @Get('user')
+  async getAllOpportunitiesOfUser(@Req() req:any) {
+    return this.opportunitiesService.getAllOpportunitiesOfUser(req)
+  }
+
   //get specific opportunity
   @Get(':opportunityId')
   async getSpecificOpportunity(@Param() Param: string) {

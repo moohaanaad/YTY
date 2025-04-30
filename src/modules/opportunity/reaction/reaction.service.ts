@@ -25,14 +25,13 @@ export class ReactionService {
         //check react existence
         
         const reactExist = opportunityExist.react.find((r) => r.user.toString() == user._id)
-        console.log(reactExist);
+        
         
         //checking data
         if (reactExist && reactExist.react == react) {
 
             opportunityExist.react = opportunityExist.react.filter((r) => r.user.toString() != user._id)
-            console.log(opportunityExist.react);
-            console.log(user._id);
+            
             
         } else if (reactExist) {
 

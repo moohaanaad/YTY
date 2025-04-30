@@ -22,17 +22,12 @@ export class UserService {
         const { user } = req
 
         //check existence
-        if (email && email != user?.email) {
-            //vreify email 
-            user.email = await this.checkExistService.checkAndUpdate(email, this.messageService.messages.user.email, file);
-        }
-
         if (userName && userName != user?.userName) {
-            user.userName = await this.checkExistService.checkAndUpdate(userName, this.messageService.messages.user.userName.alreadyExist, file);
+            user.userName = await this.checkExistService.checkAndUpdate("username",userName, this.messageService.messages.user.userName.alreadyExist, file);
         }
 
         if (phone && phone != user?.phone) {
-            user.phone = await this.checkExistService.checkAndUpdate(phone, this.messageService.messages.user.phone, file)
+            user.phone = await this.checkExistService.checkAndUpdate("phone",phone, this.messageService.messages.user.phone, file)
         }
 
         //check image

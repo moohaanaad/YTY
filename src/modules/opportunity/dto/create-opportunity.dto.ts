@@ -14,4 +14,19 @@ export class CreateOpportunityDto {
   @IsDate()
   @Type(() => Date)
   deadline: Date;
+
+  @IsString()
+  company: string
+
+  @IsString()
+  responsibilities: string
+
+  @IsString()
+  requirements: string
+
+  @IsString()
+  duration: string
+
+  @IsString()
+  link: string
 }

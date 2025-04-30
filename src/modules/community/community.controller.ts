@@ -122,10 +122,10 @@ export class CommunityController {
 
     //get all communities of specific user
     @Get("/user")
-    userCommunities(
+    volunteerCommunities(
         @Req() req: any
     ) {
-        return this.communityService.userCommunities(req)
+        return this.communityService.volunteerCommunities(req)
     }
 
     //get specific community

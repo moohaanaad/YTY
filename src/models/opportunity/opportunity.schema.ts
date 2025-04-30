@@ -14,8 +14,23 @@ export class Opportunity {
   @Prop({ type: String, trim: true })
   slug: string
 
-  @Prop({ required: true })
+  @Prop({ type: String })
   description: string;
+
+  @Prop({ type: String })
+  company: string;
+
+  @Prop({ type: String })
+  responsibilities: string;
+  
+  @Prop({ type: String })
+  requirements: string;
+  
+  @Prop({ type: String })
+  duration: string;
+  
+  @Prop({ type: String })
+  link: string;
 
   @Prop({ type: Date, required: true })
   deadline: Date;
