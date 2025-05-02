@@ -156,10 +156,10 @@ export class CommunityService {
             select: "name image slug -_id"
         }).populate({
             path: 'volunteer',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName  profileImage -_id"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
         })
         if (!communityExist) {
             return { message: this.messageService.messages.community.empty }
@@ -207,7 +207,7 @@ export class CommunityService {
             select: "firstName lastName userName profileImage -_id"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
         })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
@@ -229,7 +229,7 @@ export class CommunityService {
             select: "firstName lastName userName profileImage -_id"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
         })
 
         if (!communitiesExist) {
@@ -259,7 +259,7 @@ export class CommunityService {
             select: "firstName lastName userName profileImage -_id"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
         })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
