@@ -113,7 +113,7 @@ export class CommunityController {
     }
 
     //get all community of specific subcategory
-    @Get(':subcategoryId')
+    @Get('subcategory/:subcategoryId')
     subcategoryCommunities(
         @Param() param: any
     ) {

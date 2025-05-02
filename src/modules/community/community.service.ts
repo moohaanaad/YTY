@@ -219,7 +219,7 @@ export class CommunityService {
     //get all communities of specific volunteer
     volunteerCommunities = async (req: any) => {
         const { user } = req
-
+        
         //check existence
         const communitiesExist = await this.communityRepo.find({ members: user._id }).populate({
             path: 'subcategory',
