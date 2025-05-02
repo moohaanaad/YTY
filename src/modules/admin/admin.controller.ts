@@ -74,7 +74,7 @@ export class AdminController {
     //delete empty community
     @Delete('communities/empty/:id')
     deleteEmptyCommunity(@Param('id') id: string) {
-        return this.adminService.deleteEmptyCommunity(id);
+        return this.adminService.deleteEmptyCommunity();
     }
 
 
