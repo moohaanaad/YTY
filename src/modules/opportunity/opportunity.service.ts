@@ -70,6 +70,19 @@ export class OpportunitiesService {
     return { suceess: true, data: opportunityExist }
   }
 
+  //get all opportunities of specific user
+  async getAllOpportunitiesOfUser(req: any) {
+    const { user } = req 
+
+    const opportunitiesExist = await this.opportnuityRepo.find({ createdBy: user._id }).populate({
+      path: "createdBy",
+      select: "firstName lastName email userName profileImage"
+    });
+    if(!opportunitiesExist) throw new NotFoundException(this.messageService.messages.opportunity.notFound)
+
+      return { success: true, data: opportunitiesExist  }
+  }
+
   //update opportunity
   async updateOpportunity(param: any, req: any, body: any, file: Express.Multer.File) {
     const { opportunityId } = param

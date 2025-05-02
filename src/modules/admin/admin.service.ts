@@ -30,7 +30,7 @@ export class AdminService {
 
     }
 
-    //get user specific
+    //get specific user 
     getSpecificUser = async (params: any) => {
         const { userId } = params
 
@@ -69,7 +69,7 @@ export class AdminService {
 
     }
 
-    //delete fake user
+    //delete fake users
     deleteUnverifiedUser = async () => {
 
         let expiredUsersId = []
