@@ -23,7 +23,7 @@ export class CommunityController {
 
     //create community
     @Post()
-    @Roles(UserRole.ADMIN, UserRole.VULONTEER)
+    @Roles(UserRole.ADMIN, UserRole.VOLUNTEER)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -62,7 +62,7 @@ export class CommunityController {
 
     //update community 
     @Put(':communityId')
-    @Roles(UserRole.ADMIN, UserRole.VULONTEER)
+    @Roles(UserRole.ADMIN, UserRole.VOLUNTEER)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -120,12 +120,19 @@ export class CommunityController {
         return this.communityService.subcategoryCommunities(param)
     }
 
-    //get all communities of specific user
-    @Get("/user")
+    //get all communities of specific volunteer
+    @Get("/volunteer")
     volunteerCommunities(
         @Req() req: any
     ) {
         return this.communityService.volunteerCommunities(req)
+    }
+    //get all communities of specific volunteer
+    @Get("/user")
+    userCommunities(
+        @Req() req: any
+    ) {
+        return this.communityService.userCommunities(req)
     }
 
     //get specific community
@@ -139,7 +146,7 @@ export class CommunityController {
 
     //delete community
     @Delete(':communityId')
-    @Roles(UserRole.ADMIN, UserRole.VULONTEER)
+    @Roles(UserRole.ADMIN, UserRole.VOLUNTEER)
     deleteCommunity(
         @Param() param: any,
         @Req() req: any

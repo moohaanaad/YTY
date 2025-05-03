@@ -37,7 +37,7 @@ export class JoinService {
         } else if (existingStatus?.status == joinCommunity.PENDING) {
             throw new BadRequestException(this.messageService.messages.community.join.alreadyRequested)
         }
-        
+
         // check community status 
         if (CommunityExist.status == CommunityStatus.PUBLIC) {
             CommunityExist.members.push(user._id)
@@ -49,7 +49,7 @@ export class JoinService {
             await user.save()
             return { success: true, message: this.messageService.messages.community.join.joinSuccessfully }
         } else {
-            
+
             CommunityExist.askTOJoin.push(user._id)
             user.communities.push({
                 community: CommunityExist._id,
@@ -74,7 +74,7 @@ export class JoinService {
         }
 
         //find request index
-        const requestIndex = communityExist.askTOJoin.findIndex(req => req.toString() == user._id)
+        const requestIndex = communityExist.askTOJoin.findIndex(req => req.toString() == body.user)
         const userCommunityIndex = user.communities.findIndex(com => com.community.toString() == communityExist._id);
         if (requestIndex == -1 || userCommunityIndex == -1) {
             throw new NotFoundException(this.messageService.messages.community.join.notFound)
@@ -87,19 +87,19 @@ export class JoinService {
 
         //accept join request 
         if (body.status == CommunityJoinRequest.ACCEPTED) {
-            
-            communityExist.members.push(user._id)
+
+            communityExist.members.push(body.user)
 
             user.communities[userCommunityIndex].status = joinCommunity.JOINED
-            
+
         } else {
-            
+
             user.communities[userCommunityIndex].status = joinCommunity.REJECTED
         }
 
         //delete user from waiting list
         communityExist.askTOJoin.splice(requestIndex, 1)
-        
+
         //save 
         await communityExist.save()
         await user.markModified("communities")// Ensure nested changes are tracked
@@ -132,7 +132,7 @@ export class JoinService {
         const communityUserIndex = communityExist.askTOJoin.findIndex(
             (member) => member.toString() == user._id
         )
-        
+
         // If no pending request
         if (userCommunityIndex == -1) {
             throw new BadRequestException(this.messageService.messages.community.join.notFound);
@@ -157,7 +157,7 @@ export class JoinService {
 
         //check existence 
         const communityExist = await this.communityRepo.findById(communityId)
-        if(!communityExist) {
+        if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
 
@@ -165,15 +165,15 @@ export class JoinService {
         const userCommunityIndex = user.communities.findIndex(
             (com) => com.community.toString() == communityId && com.status == joinCommunity.JOINED
         )
-       
-        
+
+
         const communityUserIndex = communityExist.members.findIndex(
             (member) => member.toString() == user._id
         )
-        
+
 
         //if user not found
-        if(userCommunityIndex == -1) {
+        if (userCommunityIndex == -1) {
             throw new NotFoundException(this.messageService.messages.community.join.joinNotFound)
         }
 

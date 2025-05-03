@@ -17,7 +17,7 @@ export class OpportunitiesController {
 
   //create opportunity
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.VULONTEER)
+  @Roles(UserRole.ADMIN, UserRole.VOLUNTEER)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: dS('uploads/opportunity'),
@@ -46,7 +46,7 @@ export class OpportunitiesController {
 
   //update opportunity
   @Put(':opportunityId')
-  @Roles(UserRole.VULONTEER, UserRole.ADMIN)
+  @Roles(UserRole.VOLUNTEER, UserRole.ADMIN)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: dS('uploads/opportunity'),
@@ -58,7 +58,7 @@ export class OpportunitiesController {
 
   //delete opportunity
   @Delete(':opportunityId')
-  @Roles(UserRole.VULONTEER, UserRole.ADMIN)
+  @Roles(UserRole.VOLUNTEER, UserRole.ADMIN)
   async deleteOpportunity(@Param() param: any, @Req() req: any,) {
     return this.opportunitiesService.deleteOpportunity(param, req);
   }

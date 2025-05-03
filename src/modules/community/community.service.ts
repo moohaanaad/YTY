@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import slugify from "slugify"
 import { deleteFile } from "src/common"
 import { CommunityRepository, SubcategoryRepository } from "src/models"
-import { MessageService } from "src/utils"
+import { joinCommunity, MessageService } from "src/utils"
 
 
 @Injectable()
@@ -219,9 +219,9 @@ export class CommunityService {
     //get all communities of specific volunteer
     volunteerCommunities = async (req: any) => {
         const { user } = req
-        
+
         //check existence
-        const communitiesExist = await this.communityRepo.find({ members: user._id }).populate({
+        const communitiesExist = await this.communityRepo.find({ createdBy: user._id }).populate({
             path: 'subcategory',
             select: "name image slug -_id"
         }).populate({
@@ -231,6 +231,39 @@ export class CommunityService {
             path: 'askTOJoin',
             select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
         })
+
+        if (!communitiesExist) {
+            throw new NotFoundException(this.messageService.messages.community.empty)
+        }
+
+        //response
+        return { success: true, data: communitiesExist }
+    }
+
+    //get all communities of specific user
+    userCommunities = async (req: any) => {
+        const { user } = req
+        let userCommunitiesId = []
+        for (let i = 0; i < user.communities.length; i++) {
+            if (user.communities[i].status == joinCommunity.JOINED) {
+                userCommunitiesId.push(user.communities[i].community)
+            }
+
+        }
+        console.log(userCommunitiesId);
+
+        //check existence
+        const communitiesExist = await this.communityRepo.find({ _id: { $in: userCommunitiesId } }).populate({
+            path: 'subcategory',
+            select: "name image slug -_id"
+        }).populate({
+            path: 'volunteer',
+            select: "firstName lastName userName profileImage -_id"
+        }).populate({
+            path: 'askTOJoin',
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
+        })
+        console.log(communitiesExist);
 
         if (!communitiesExist) {
             throw new NotFoundException(this.messageService.messages.community.empty)
@@ -252,8 +285,8 @@ export class CommunityService {
             path: 'subcategory',
             select: "name image slug -_id"
         }).populate({
-           path: 'members',
-           select: "firstName lastName email userName profileImage" 
+            path: 'members',
+            select: "firstName lastName email userName profileImage"
         }).populate({
             path: 'volunteer',
             select: "firstName lastName userName profileImage -_id"

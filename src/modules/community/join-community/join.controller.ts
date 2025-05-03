@@ -21,7 +21,7 @@ export class JoinController {
     }
 
     //handle join community request
-    @Roles(UserRole.VULONTEER)
+    @Roles(UserRole.VOLUNTEER)
     @Put('handle-request/:communityId')
     handleRequest(
         @Param() param: any,
