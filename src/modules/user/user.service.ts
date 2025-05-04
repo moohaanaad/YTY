@@ -157,6 +157,9 @@ export class UserService {
             throw new BadRequestException(error)
         }
     }
+
+    //accept volunteer request
+
     acceptVolunteerRequest = async (userId: string) => {
         //check if userId is provided
         if (!userId) {
@@ -178,19 +181,23 @@ export class UserService {
         if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
           throw new BadRequestException('User does not have a pending volunteer request');
         }
+
         //make user volunteer
 
         user.vulonteerReqStatus = ConfirmVolunteerRequist.VERIFIED;
-        user.roles = 'VOLUNTEER'; 
+        user.roles = 'volunteer'; 
         //save data
         await user.save();
+
         //response
 
         return { success: true, message: 'User accepted as volunteer', data: user };
       };
+
       //reject volunteer request
 
       rejectVolunteerRequest = async (userId: string) => {
+        
         //check if userId is provided
 
         if (!userId) {
