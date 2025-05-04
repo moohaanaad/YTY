@@ -8,6 +8,8 @@ import { MessageService } from 'src/utils';
 import { RolesGuard } from 'src/guard/roles.guard';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Opportunity, OpportunitySchema } from 'src/models/opportunity/opportunity.schema';
+import { UserService } from '../user/user.service';
+import { CheckExistService } from '../user/checkExist.service';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -16,6 +18,6 @@ import { Opportunity, OpportunitySchema } from 'src/models/opportunity/opportuni
       { name: Opportunity.name, schema: OpportunitySchema }  
     ])],
   controllers: [AdminController],
-  providers: [AdminService,UserRepository,CommunityRepository,OpportunityRepository,JwtService,MessageService,RolesGuard],
+  providers: [AdminService,UserRepository,CommunityRepository,OpportunityRepository,JwtService,MessageService,RolesGuard,UserService,CheckExistService],
 })
 export class AdminModule {}
