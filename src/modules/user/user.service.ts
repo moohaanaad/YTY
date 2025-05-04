@@ -4,6 +4,7 @@ import { UserRepository } from 'src/models/user/user.repository';
 import { MessageService } from 'src/utils';
 import { CheckExistService } from './checkExist.service';
 import { ConfirmVolunteerRequist, Gender } from 'src/utils/enums/user.enum';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UserService {
@@ -156,5 +157,72 @@ export class UserService {
             throw new BadRequestException(error)
         }
     }
+    acceptVolunteerRequest = async (userId: string) => {
+        //check if userId is provided
+        if (!userId) {
+          throw new BadRequestException('User ID is required');
+        }
+        //convert userId to ObjectId
+
+         if (!Types.ObjectId.isValid(userId)) {
+            throw new BadRequestException('Invalid User ID format');
+          }
+        const objectId = new Types.ObjectId(userId);
+        
+
+        const user = await this.userRepo.findById(objectId);
+        //check existence
+        if (!user) throw new NotFoundException('User not found');
+        
+        //check if user req before
+        if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
+          throw new BadRequestException('User does not have a pending volunteer request');
+        }
+        //make user volunteer
+
+        user.vulonteerReqStatus = ConfirmVolunteerRequist.VERIFIED;
+        user.roles = 'VOLUNTEER'; 
+        //save data
+        await user.save();
+        //response
+
+        return { success: true, message: 'User accepted as volunteer', data: user };
+      };
+      //reject volunteer request
+
+      rejectVolunteerRequest = async (userId: string) => {
+        //check if userId is provided
+
+        if (!userId) {
+            throw new BadRequestException('User ID is required');
+          }
+        //convert userId to ObjectId
+
+          const objectId = new Types.ObjectId(userId);
+            
+        const user = await this.userRepo.findById(objectId);
+        //check existence
+        
+        if (!user) throw new NotFoundException('User not found');
+        
+        //check if user req before
+
+        if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
+          throw new BadRequestException('User does not have a pending volunteer request');
+        }
+        //reject user to be volunteer
+
+        user.vulonteerReqStatus = ConfirmVolunteerRequist.REJECTED;
+        //save data
+
+        await user.save();
+        //response
+
+        return {
+          success: true,message: 'User volunteer request rejected',data: user
+        };
+      };
+      
+      
 
 }

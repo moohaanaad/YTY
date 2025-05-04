@@ -4,13 +4,15 @@ import { RolesGuard } from 'src/guard/roles.guard';
 import { Roles } from '../authorization/roles.decorator';
 import { UserRole } from 'src/utils';
 import { AdminService } from './admin.service';
+import { UserService } from '../user/user.service';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 @Controller('admin')
 export class AdminController {
     constructor(
-        private adminService: AdminService) { }
+        private adminService: AdminService,
+        private readonly userService: UserService) { }
 
     //-----------------USER-----------------
 
@@ -91,5 +93,17 @@ export class AdminController {
     deleteOpportunity(@Param('id') id: string) {
         return this.adminService.deleteOpportunity(id);
     }
+    //----------------Become volunteer-----------------
+    //accept volunteer
+    @Patch('users/:id/accept-volunteer')
+    acceptVolunteerRequest(@Param('id') userId: string) {
+    return this.userService.acceptVolunteerRequest(userId);
+    }
+    //reject volunteer
+    @Patch('users/:id/reject-volunteer')
+    rejectVolunteerRequest(@Param('id') userId: string) {
+        return this.userService.rejectVolunteerRequest(userId);
+    }
 }
+
 
