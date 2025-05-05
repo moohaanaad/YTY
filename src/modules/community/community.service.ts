@@ -150,16 +150,16 @@ export class CommunityService {
 
         const communityExist = await this.communityRepo.find().populate({
             path: 'category',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'subcategory',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'volunteer',
-            select: "firstName lastName userName  profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         })
         if (!communityExist) {
             return { message: this.messageService.messages.community.empty }
@@ -198,16 +198,16 @@ export class CommunityService {
 
         const communityExist = await this.communityRepo.find({ subcategory: subcategoryId }).populate({
             path: 'category',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'subcategory',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'volunteer',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName profileImage"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
@@ -222,16 +222,21 @@ export class CommunityService {
 
         //check existence
         const communitiesExist = await this.communityRepo.find({ createdBy: user._id }).populate({
+            path: 'category',
+            select: "name image slug"
+        }).populate({
             path: 'subcategory',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'volunteer',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
+        }).populate({
+            path: 'members',
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         })
-
         if (!communitiesExist) {
             throw new NotFoundException(this.messageService.messages.community.empty)
         }
@@ -254,16 +259,18 @@ export class CommunityService {
 
         //check existence
         const communitiesExist = await this.communityRepo.find({ _id: { $in: userCommunitiesId } }).populate({
+            path: 'category',
+            select: "name image slug"
+        }).populate({
             path: 'subcategory',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'volunteer',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         }).populate({
-            path: 'askTOJoin',
-            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
+            path: 'members',
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         })
-        console.log(communitiesExist);
 
         if (!communitiesExist) {
             throw new NotFoundException(this.messageService.messages.community.empty)
@@ -280,19 +287,19 @@ export class CommunityService {
 
         const communityExist = await this.communityRepo.findById(communityId).populate({
             path: 'category',
-            select: "name image slug -_id"
+            select: "name image slug"
         }).populate({
             path: 'subcategory',
-            select: "name image slug -_id"
-        }).populate({
-            path: 'members',
-            select: "firstName lastName email userName profileImage"
+            select: "name image slug"
         }).populate({
             path: 'volunteer',
-            select: "firstName lastName userName profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         }).populate({
             path: 'askTOJoin',
-            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage -_id"
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
+        }).populate({
+            path: 'members',
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         })
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
