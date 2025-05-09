@@ -160,6 +160,9 @@ export class CommunityService {
         }).populate({
             path: 'askTOJoin',
             select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
+        }).populate({
+            path: 'members',
+            select: "firstName lastName userName email BD roles address phone gender bio interested education skills profileImage"
         })
         if (!communityExist) {
             return { message: this.messageService.messages.community.empty }
