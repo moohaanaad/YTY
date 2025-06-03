@@ -120,14 +120,14 @@ export class CommunityController {
         return this.communityService.subcategoryCommunities(param)
     }
 
-    //get all communities of specific volunteer
+    //get all created communities of specific volunteer
     @Get("/volunteer")
     volunteerCommunities(
         @Req() req: any
     ) {
         return this.communityService.volunteerCommunities(req)
     }
-    //get all communities of specific volunteer
+    //get all joined communities of specific user
     @Get("/user")
     userCommunities(
         @Req() req: any

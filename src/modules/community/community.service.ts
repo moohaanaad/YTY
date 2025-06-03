@@ -258,8 +258,6 @@ export class CommunityService {
             }
 
         }
-        console.log(userCommunitiesId);
-
         //check existence
         const communitiesExist = await this.communityRepo.find({ _id: { $in: userCommunitiesId } }).populate({
             path: 'category',

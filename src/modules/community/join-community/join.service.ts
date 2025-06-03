@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CommunityRepository } from 'src/models';
+import { CommunityRepository, UserRepository } from 'src/models';
 import { CommunityJoinRequest, CommunityStatus, joinCommunity, MessageService } from 'src/utils';
 
 @Injectable()
 export class JoinService {
     constructor(
         private communityRepo: CommunityRepository,
+        private userRepo: UserRepository,
         private messageService: MessageService
     ) { }
 
@@ -72,10 +73,13 @@ export class JoinService {
         if (!communityExist) {
             throw new NotFoundException(this.messageService.messages.community.notFound)
         }
+        
+        //check user exist
+        const userAskedToJoin = await this.userRepo.findById(body.user)
 
         //find request index
         const requestIndex = communityExist.askTOJoin.findIndex(req => req.toString() == body.user)
-        const userCommunityIndex = user.communities.findIndex(com => com.community.toString() == communityExist._id);
+        const userCommunityIndex = userAskedToJoin.communities.findIndex(com => com.community.toString() == communityExist._id);
         if (requestIndex == -1 || userCommunityIndex == -1) {
             throw new NotFoundException(this.messageService.messages.community.join.notFound)
         }
@@ -90,7 +94,7 @@ export class JoinService {
 
             communityExist.members.push(body.user)
 
-            user.communities[userCommunityIndex].status = joinCommunity.JOINED
+            userAskedToJoin.communities[userCommunityIndex].status = joinCommunity.JOINED
 
         } else {
 
@@ -102,15 +106,15 @@ export class JoinService {
 
         //save 
         await communityExist.save()
-        await user.markModified("communities")// Ensure nested changes are tracked
-        await user.save()
+        await userAskedToJoin.markModified("communities")// Ensure nested changes are tracked
+        await userAskedToJoin.save()
 
         //response
         return {
             success: true,
             members: communityExist.members,
             waiting: communityExist.askTOJoin,
-            communityJoined: user.communities
+            communityJoined: userAskedToJoin.communities
         }
     }
 
