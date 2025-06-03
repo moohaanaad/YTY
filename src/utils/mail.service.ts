@@ -13,6 +13,9 @@ export class MailService {
              user: this.configService.get<string>('MAIL_USER_NAME') ,
             pass: this.configService.get<string>("MAIL_PASSWORD"),
         },
+        tls: {
+        rejectUnauthorized: false, //self-signed certificate
+    },
     });
 
     async sendEmail({ to, subject, html }: { to: string; subject: string; html: string; }): Promise<boolean> {
