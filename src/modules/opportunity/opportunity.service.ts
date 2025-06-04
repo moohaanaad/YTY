@@ -72,15 +72,15 @@ export class OpportunitiesService {
 
   //get all opportunities of specific user
   async getAllOpportunitiesOfUser(req: any) {
-    const { user } = req 
+    const { user } = req
 
     const opportunitiesExist = await this.opportnuityRepo.find({ createdBy: user._id }).populate({
       path: "createdBy",
       select: "firstName lastName email userName profileImage"
     });
-    if(!opportunitiesExist) throw new NotFoundException(this.messageService.messages.opportunity.notFound)
+    if (!opportunitiesExist) throw new NotFoundException(this.messageService.messages.opportunity.notFound)
 
-      return { success: true, data: opportunitiesExist  }
+    return { success: true, data: opportunitiesExist }
   }
 
   //update opportunity
@@ -90,7 +90,11 @@ export class OpportunitiesService {
     const { title, slug, description, deadline } = body
 
     //check existence
-    const opportunityExist = await this.opportnuityRepo.findById(opportunityId);
+    const opportunityExist = await this.opportnuityRepo.findOne(
+      {
+        _id: opportunityId,
+        createdBy: user._id
+      });
     if (!opportunityExist) {
       if (file) {
         deleteFile(file.path)
@@ -134,8 +138,10 @@ export class OpportunitiesService {
     const { user } = req
 
     //check existence
-    const opportunityExist = await this.opportnuityRepo.findOneAndDelete({ _id: opportunityId, createdBy: user._id });
-
+    const opportunityExist = await this.opportnuityRepo.findOneAndDelete({
+       _id: opportunityId,
+        createdBy: user._id 
+      });
     if (!opportunityExist) {
       throw new NotFoundException(this.messageService.messages.opportunity.notFound);
 

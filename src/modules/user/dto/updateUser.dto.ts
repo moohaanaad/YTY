@@ -61,7 +61,7 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString()
-    skill:string
+    skills:string
 
     @IsOptional()
     @IsString()

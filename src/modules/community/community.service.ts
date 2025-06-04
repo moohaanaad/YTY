@@ -69,13 +69,17 @@ export class CommunityService {
             const { name, desc, limitOfUsers, roles, location, status, date, types } = body
 
             //check existence 
-            const communityExist = await this.communityRepo.findById(communityId).populate({
+            const communityExist = await this.communityRepo.findOne({
+                _id: communityId,
+                createdBy: user._id
+            }).populate({
                 path: 'category',
                 select: "name image slug -_id"
             }).populate({
                 path: 'subcategory',
                 select: "name image slug -_id"
             })
+
             if (!communityExist) {
                 if (file) {
                     deleteFile(file?.path)

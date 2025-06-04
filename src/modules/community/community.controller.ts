@@ -62,7 +62,7 @@ export class CommunityController {
 
     //update community 
     @Put(':communityId')
-    @Roles(UserRole.ADMIN, UserRole.VOLUNTEER)
+    @Roles(UserRole.VOLUNTEER)
     @UseInterceptors(FileInterceptor('image', {
         storage: dS('uploads/community'),
         fileFilter: fileValidation(fileValidationTypes.image)
@@ -146,7 +146,7 @@ export class CommunityController {
 
     //delete community
     @Delete(':communityId')
-    @Roles(UserRole.ADMIN, UserRole.VOLUNTEER)
+    @Roles(UserRole.VOLUNTEER)
     deleteCommunity(
         @Param() param: any,
         @Req() req: any

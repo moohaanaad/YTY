@@ -18,17 +18,17 @@ export class UserService {
     updateUser = async (body: any, req: any, file: Express.Multer.File) => {
         const {
             email, userName, phone, firstName, lastName, address, BD, gender,
-            bio, education, skill, interested,
+            bio, education, skills, interested,
         } = body
         const { user } = req
 
         //check existence
         if (userName && userName != user?.userName) {
-            user.userName = await this.checkExistService.checkAndUpdate("username",userName, this.messageService.messages.user.userName.alreadyExist, file);
+            user.userName = await this.checkExistService.checkAndUpdate("username", userName, this.messageService.messages.user.userName.alreadyExist, file);
         }
 
         if (phone && phone != user?.phone) {
-            user.phone = await this.checkExistService.checkAndUpdate("phone",phone, this.messageService.messages.user.phone, file)
+            user.phone = await this.checkExistService.checkAndUpdate("phone", phone, this.messageService.messages.user.phone, file)
         }
 
         //check image
@@ -47,7 +47,10 @@ export class UserService {
             }
         }
 
+        //parse data
         if (interested) user.interested = JSON.parse(interested);
+        if (skills) user.skills = JSON.parse(skills);
+
 
         //preapre data
         const updateableFields = {
@@ -58,8 +61,6 @@ export class UserService {
             gender,
             bio,
             education,
-            skill,
-
         };
 
 
@@ -94,7 +95,7 @@ export class UserService {
         }
 
         const deletedUser = await this.userRepo.findByIdAndDelete(user._id)
-        
+
 
         if (!deletedUser) {
             return new BadRequestException()
@@ -109,19 +110,19 @@ export class UserService {
             let { education, skills, IDImages } = body
 
             //check if user req before
-            if(user.vulonteerReqStatus == ConfirmVolunteerRequist.PENDING){
-                if(IDImages){
+            if (user.vulonteerReqStatus == ConfirmVolunteerRequist.PENDING) {
+                if (IDImages) {
                     deleteFile(IDImages.frontIdCardImage)
                     deleteFile(IDImages.backIdCardImage)
                 }
-                return { message: 'you are already make requist to be volunteer please wait admins approve'}
+                return { message: 'you are already make requist to be volunteer please wait admins approve' }
             }
-            if(user.vulonteerReqStatus == ConfirmVolunteerRequist.REJECTED){
-                if(IDImages){
+            if (user.vulonteerReqStatus == ConfirmVolunteerRequist.REJECTED) {
+                if (IDImages) {
                     deleteFile(IDImages.frontIdCardImage)
                     deleteFile(IDImages.backIdCardImage)
                 }
-                return { message: 'you are rejected'}
+                return { message: 'you are rejected' }
             }
 
 
@@ -157,79 +158,5 @@ export class UserService {
             throw new BadRequestException(error)
         }
     }
-
-    //accept volunteer request
-
-    acceptVolunteerRequest = async (userId: string) => {
-        //check if userId is provided
-        if (!userId) {
-          throw new BadRequestException('User ID is required');
-        }
-        //convert userId to ObjectId
-
-         if (!Types.ObjectId.isValid(userId)) {
-            throw new BadRequestException('Invalid User ID format');
-          }
-        const objectId = new Types.ObjectId(userId);
-        
-
-        const user = await this.userRepo.findById(objectId);
-        //check existence
-        if (!user) throw new NotFoundException('User not found');
-        
-        //check if user req before
-        if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
-          throw new BadRequestException('User does not have a pending volunteer request');
-        }
-
-        //make user volunteer
-
-        user.vulonteerReqStatus = ConfirmVolunteerRequist.VERIFIED;
-        user.roles = 'volunteer'; 
-        //save data
-        await user.save();
-
-        //response
-
-        return { success: true, message: 'User accepted as volunteer', data: user };
-      };
-
-      //reject volunteer request
-
-      rejectVolunteerRequest = async (userId: string) => {
-        
-        //check if userId is provided
-
-        if (!userId) {
-            throw new BadRequestException('User ID is required');
-          }
-        //convert userId to ObjectId
-
-          const objectId = new Types.ObjectId(userId);
-            
-        const user = await this.userRepo.findById(objectId);
-        //check existence
-        
-        if (!user) throw new NotFoundException('User not found');
-        
-        //check if user req before
-
-        if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
-          throw new BadRequestException('User does not have a pending volunteer request');
-        }
-        //reject user to be volunteer
-
-        user.vulonteerReqStatus = ConfirmVolunteerRequist.REJECTED;
-        //save data
-
-        await user.save();
-        //response
-
-        return {
-          success: true,message: 'User volunteer request rejected',data: user
-        };
-      };
-      
-      
 
 }

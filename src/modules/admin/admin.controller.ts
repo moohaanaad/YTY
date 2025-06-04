@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from 'src/guard/authentication.guard';
 import { RolesGuard } from 'src/guard/roles.guard';
 import { Roles } from '../authorization/roles.decorator';
 import { UserRole } from 'src/utils';
 import { AdminService } from './admin.service';
 import { UserService } from '../user/user.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { dS, fileValidation, fileValidationTypes } from 'src/common';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -29,7 +31,7 @@ export class AdminController {
     }
 
     //change user role
-    @Patch('user/:id/role')
+    @Patch('user/role/:id')
     changeUserRole(@Param('id') id: string, @Body('role') role: string) {
         return this.adminService.changeUserRole(id, role);
     }
@@ -40,7 +42,7 @@ export class AdminController {
         return this.adminService.deleteUser(id);
     }
 
-    //delete fake user
+    //delete fake users
     @Delete('users/unverified')
     deleteunverifiedUser() {
         return this.adminService.deleteUnverifiedUser();
@@ -50,59 +52,86 @@ export class AdminController {
     //-----------------COMMUNITY-----------------
 
     //get all communities that have user in it
-    @Get('communities/with-members')
+    @Get('community/with-members')
     getCommunitiesWithMembers() {
         return this.adminService.getCommunitiesWithMembers();
     }
 
-    //get community that have no members
-    @Get('communities/no-members')
+    //get all communities that have no user in it
+    @Get('community/no-members')
     getCommunitiesWithoutMembers() {
         return this.adminService.getCommunitiesWithoutMembers();
     }
 
     //get all communities
-    @Get('communities')
+    @Get('community')
     getAllCommunities(@Query() query: any) {
         return this.adminService.getAllCommunities(query);
     }
 
-    //delete community
-    @Delete('communities/:id')
+    //delete specific community
+    @Delete('community/:id')
     deleteCommunity(@Param('id') id: string) {
         return this.adminService.deleteCommunity(id);
     }
 
-    //delete empty community
-    @Delete('communities/empty/:id')
-    deleteEmptyCommunity(@Param('id') id: string) {
+    //delete all empty communities
+    @Delete('community')
+    deleteEmptyCommunity() {
         return this.adminService.deleteEmptyCommunity();
+    }
+
+    //update community 
+    @Put('community/:communityId')
+    @UseInterceptors(FileInterceptor('image', {
+        storage: dS('uploads/community'),
+        fileFilter: fileValidation(fileValidationTypes.image)
+    }))
+    updateCommunity(@Param() param: any, @Body() body: any, @UploadedFile() file: Express.Multer.File) {
+        return this.adminService.updateCommuniuty(param, body, file)
+    }
+
+    @Put('community/remove-member/:communityId')
+    removeMember(@Param() param: any, @Body() body: any) {
+        return this.adminService.removeMember(param, body)
     }
 
 
     //-----------------OPPORTUNITY-----------------
 
     //get all opportunities
-    @Get('opportunities')
-    getAllOpportunities(@Query() query: any) {
-        return this.adminService.getAllOpportunities(query);
+    @Get('opportunity')
+    getAllOpportunities() {
+        return this.adminService.getAllOpportunities();
     }
 
     //delete opportunity
-    @Delete('opportunities/:id')
+    @Delete('opportunity/:id')
     deleteOpportunity(@Param('id') id: string) {
         return this.adminService.deleteOpportunity(id);
     }
+
+    //update opportunity
+    @Put('opportunity/:opportunityId')
+    @UseInterceptors(FileInterceptor('image', {
+        storage: dS('uploads/community'),
+        fileFilter: fileValidation(fileValidationTypes.image)
+    }))
+    updateOpportunity(@Param() param: any, @Body() body: any, @UploadedFile() file: Express.Multer.File) {
+        return this.adminService.updateOpportunity(param, body, file)
+    }
+
     //----------------Become volunteer-----------------
+    
     //accept volunteer
     @Patch('users/:id/accept-volunteer')
     acceptVolunteerRequest(@Param('id') userId: string) {
-    return this.userService.acceptVolunteerRequest(userId);
+        return this.adminService.acceptVolunteerRequest(userId);
     }
     //reject volunteer
     @Patch('users/:id/reject-volunteer')
     rejectVolunteerRequest(@Param('id') userId: string) {
-        return this.userService.rejectVolunteerRequest(userId);
+        return this.adminService.rejectVolunteerRequest(userId);
     }
 }
 
