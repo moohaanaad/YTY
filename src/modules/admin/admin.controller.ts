@@ -133,6 +133,26 @@ export class AdminController {
     rejectVolunteerRequest(@Param('id') userId: string) {
         return this.adminService.rejectVolunteerRequest(userId);
     }
+    // get satas 
+    @Get('stats')
+    getStats() {
+        return this.adminService.getAllStats();
+
+    }
+    @Get ('stats/topCommunities')
+    getTopCommunities() {
+        return this.adminService.topCommunities();
+    }
+    @Get ('stats/rolespi')
+    getRolesStats() {
+        return this.adminService.getRolesStats();
+    }
+    @Get('stats/usergrowth')
+async getUserGrowth() {
+  return this.adminService.getUserGrowth();
+}
+
+
 }
 
 

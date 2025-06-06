@@ -4,9 +4,10 @@ import { Opportunity } from 'src/models/opportunity/opportunity.schema';
 
 import { Types } from 'mongoose';
 import { OpportunityRepository } from 'src/models/opportunity/opportunity.repository';
-import { ConfirmEmail, ConfirmVolunteerRequist, MessageService } from 'src/utils';
+import { ConfirmEmail, ConfirmVolunteerRequist, MessageService, UserRole } from 'src/utils';
 import { deleteFile } from 'src/common';
 import slugify from 'slugify';
+import { Roles } from '../authorization/roles.decorator';
 
 
 
@@ -406,5 +407,113 @@ export class AdminService {
             success: true, message: 'User volunteer request rejected', data: user
         };
     };
+    //get all stats of users, communities, opportunities, and volunteers
 
+    getAllStats = async () => {
+        const totalUsers = await this.userRepo.countDocuments();
+        const verifiedUsers = await this.userRepo.countDocuments({ confirmEmail: ConfirmEmail.VERIFIED });
+        const volunteers = await this.userRepo.countDocuments({ roles:UserRole.VOLUNTEER });
+        const pendingRequests = await this.userRepo.countDocuments({ vulonteerReqStatus: ConfirmVolunteerRequist.PENDING });
+        const communities = await this.communityRepo.countDocuments();
+        const opportunities = await this.opportunityRepo.countDocuments();
+        
+        return {
+            success: true,
+            data: {
+                totalUsers,
+                verifiedUsers,
+                volunteers,
+                pendingRequests,
+                communities,
+                opportunities,
+                
+            }
+
+        };
+        
+    }
+    //get top 5 communities by number of members
+
+    topCommunities = async () => {
+        const topCommunities = await this.communityRepo.find().sort({ members: -1 }).limit(5).select('name image slug members').lean();
+    
+    return {
+        success: true,
+        data: topCommunities
+        }
+
+    }  
+    //get roles stats for pie chart
+    
+    getRolesStats = async () => {   
+        const rolesStats = await this.userRepo.aggtegate([
+            {
+                $group: {
+                _id: '$roles',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    role: '$_id',
+                    count: 1
+                }
+            }
+        ]);
+
+        const rolesPie = rolesStats.map(role => ({
+            name: role.role,
+            value: role.count
+        }));
+
+        return {
+            success: true,
+            data: rolesPie
+        };
+    }
+    //get user growth by month
+
+    async getUserGrowth(): Promise<{ month: string; count: number }[]> {
+  const result = await this.userRepo.aggtegate([
+    {
+      $group: {
+        _id: {
+          year: { $year: '$createdAt' },
+          month: { $month: '$createdAt' },
+        },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $sort: {
+        '_id.year': 1,
+        '_id.month': 1,
+      },
+    },
+    {
+      $project: {
+        month: {
+          $concat: [
+            { $toString: '$_id.year' },
+            '-',
+            {
+              $cond: [
+                { $lt: ['$_id.month', 10] },
+                { $concat: ['0', { $toString: '$_id.month' }] },
+                { $toString: '$_id.month' },
+              ],
+            },
+          ],
+        },
+        count: 1,
+        _id: 0,
+      },
+    },
+  ]);
+
+  return result;
+}
+
+       
 }

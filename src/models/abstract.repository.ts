@@ -72,5 +72,11 @@ export abstract class AbstractRepositry<T> {
             }
         ])
     }
+    async countDocuments(filter: Record<string, any> = {}): Promise<number> {
+    return this.nModel.countDocuments(filter).exec();
+  }
+  aggtegate(pipeline: any[]) {
+    return this.nModel.aggregate(pipeline);
+  }
 
 }
