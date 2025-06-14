@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, Param } from '@nestjs/common';
-import { CommunityRepository, User, UserRepository } from 'src/models';
+import { CategoryRepository, CommunityRepository, User, UserRepository } from 'src/models';
 import { Opportunity } from 'src/models/opportunity/opportunity.schema';
 
 import { Types } from 'mongoose';
@@ -12,6 +12,7 @@ import { Roles } from '../authorization/roles.decorator';
 
 
 
+
 @Injectable()
 export class AdminService {
     constructor(
@@ -19,6 +20,7 @@ export class AdminService {
         private communityRepo: CommunityRepository,
         private messageService: MessageService,
         private opportunityRepo: OpportunityRepository,
+        private CategoryRepo:CategoryRepository,
     ) { }
 
     //-----------------USER-----------------
@@ -512,8 +514,32 @@ export class AdminService {
     },
   ]);
 
+  
   return result;
 }
+
+//ecentVolunteerRequests
+
+    async getRecentVolunteerRequests(limit = 5) {
+  return this.userRepo
+    .find({ volunteerStatus: 'pending' })
+    .sort({ createdAt: -1 }) // most recent first
+    .limit(limit)
+    .select('fullName email createdAt') // select only required fields
+    .exec();
+}
+
+//RecentCategories
+
+    async getRecentCategories(limit = 10) {
+    return this.CategoryRepo
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .select('name createdAt')
+      .exec();
+  }
+
 
        
 }

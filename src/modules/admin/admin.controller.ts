@@ -133,23 +133,46 @@ export class AdminController {
     rejectVolunteerRequest(@Param('id') userId: string) {
         return this.adminService.rejectVolunteerRequest(userId);
     }
+    //--------------------------------------DASHBOARD------------------------------------//
     // get satas 
+
     @Get('stats')
     getStats() {
         return this.adminService.getAllStats();
-
     }
+
+    // TOP 5 Communities
+
     @Get ('stats/topCommunities')
-    getTopCommunities() {
+    async getTopCommunities() {
         return this.adminService.topCommunities();
     }
+
+    // ROLRS PI 
+
     @Get ('stats/rolespi')
-    getRolesStats() {
+    async getRolesStats() {
         return this.adminService.getRolesStats();
     }
+
+    // USER GROTH 
+
     @Get('stats/usergrowth')
-async getUserGrowth() {
-  return this.adminService.getUserGrowth();
+    async getUserGrowth() {
+    return this.adminService.getUserGrowth();
+    }
+
+    // RECENT VOLUNTEER REQUESTES
+
+    @Get('recent-volunteer-requests')//doesnt work yet
+
+    async getRecentVolunteerRequests(@Query('limit') limit = 5) {
+    return this.adminService.getRecentVolunteerRequests();
+}
+//recent categories
+    @Get('recent-categories')
+    async getRecentCategories(@Query('limit') limit = 10) {
+    return this.adminService.getRecentCategories(+limit);
 }
 
 
