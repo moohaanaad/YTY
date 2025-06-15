@@ -39,7 +39,7 @@ export class UserService {
                 deleteFile(user.profileImage)
             }
             user.profileImage = file.path
-        } else {
+        } else if(!file && !user.profileImage) {
             if (user.gender == Gender.MALE) {
                 user.profileImage = defaultMaleProfile
             } else {

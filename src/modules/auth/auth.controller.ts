@@ -4,6 +4,7 @@ import { AuthGuard } from 'src/guard/authentication.guard';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { changePasswordDto } from './dto/changePassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -50,7 +51,14 @@ export class AuthController {
     resetPassword(@Body() body: ResetPasswordDto){
         return this.authService.resetPassword(body)
     }
-
+    
+    //change password
+    @Put('change-password')
+    @UseGuards(AuthGuard)
+    changePassword(@Req() req: any, @Body() body: changePasswordDto) {
+        return this.authService.changePassword(req, body)
+    }
+    
     //logout
     @Put('logout')
     @UseGuards(AuthGuard)

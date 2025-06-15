@@ -409,7 +409,8 @@ export class AdminService {
             success: true, message: 'User volunteer request rejected', data: user
         };
     };
-    //get all stats of users, communities, opportunities, and volunteers
+    
+    //-----------------get all stats of users, communities, opportunities, and volunteers-----------------
 
     getAllStats = async () => {
         const totalUsers = await this.userRepo.countDocuments();
@@ -434,8 +435,8 @@ export class AdminService {
         };
         
     }
-    //get top 5 communities by number of members
 
+    //get top 5 communities by number of members
     topCommunities = async () => {
         const topCommunities = await this.communityRepo.find().sort({ members: -1 }).limit(5).select('name image slug members').lean();
     
@@ -444,10 +445,9 @@ export class AdminService {
         data: topCommunities
         }
 
-    }  
-    
+    }
+
     //get roles stats for pie chart
-    
     getRolesStats = async () => {   
         const rolesStats = await this.userRepo.aggtegate([
             {
@@ -475,8 +475,8 @@ export class AdminService {
             data: rolesPie
         };
     }
-    //get user growth by month
 
+    //get user growth by month
     async getUserGrowth(): Promise<{ month: string; count: number }[]> {
   const result = await this.userRepo.aggtegate([
     {
@@ -520,7 +520,6 @@ export class AdminService {
 }
 
 //ecentVolunteerRequests
-
     async getRecentVolunteerRequests(limit = 5) {
   return this.userRepo
     .find({ volunteerStatus: 'pending' })
@@ -531,7 +530,6 @@ export class AdminService {
 }
 
 //RecentCategories
-
     async getRecentCategories(limit = 10) {
     return this.CategoryRepo
       .find()
@@ -539,8 +537,5 @@ export class AdminService {
       .limit(limit)
       .select('name createdAt')
       .exec();
-  }
-
-
-       
+  }      
 }

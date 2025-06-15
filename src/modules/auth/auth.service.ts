@@ -1,6 +1,8 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { compare } from 'bcrypt';
+import { stringify } from 'querystring';
 import { PasswordService } from 'src/common/hashAndComparePassword/password.service';
 import { User, userSchema } from 'src/models';
 import { UserRepository } from 'src/models/user/user.repository';
@@ -72,7 +74,7 @@ export class AuthService {
         if (userExist.confirmEmail == ConfirmEmail.VERIFIED
             || userExist.confirmEmail == ConfirmEmail.BLOCKED
             || userExist.confirmEmail == ConfirmEmail.DELEETED) {
-                throw new ConflictException(`your email was allready ${userExist.confirmEmail}`)
+            throw new ConflictException(`your email was allready ${userExist.confirmEmail}`)
         }
 
         //check date
@@ -235,5 +237,33 @@ export class AuthService {
         return { success: true, data: user.status }
     }
 
+    //change password 
+    changePassword = async (req: any, body: any) => {
+        const { user } = req
+        const { oldPassword, newPassword } = body
+
+        // check existence
+        const userExist = await this.userRepo.findOne({email: user.email})
+        if(!userExist) {
+            throw new NotFoundException(this.messageService.messages.user.notFound)
+        }
+
+        //check password
+        const comparedPassword = this.passwordService.compare(oldPassword, userExist.password)
+        
+        if (!comparedPassword) {
+            throw new ConflictException('the old password was wrong')
+        }
+
+        //prepare data
+        const hashedPassword = await this.passwordService.hashPassword(newPassword)
+        userExist.password = hashedPassword
+
+        //save data
+        userExist.save()
+
+        //response
+        return { success: true }
+    }
 
 }
