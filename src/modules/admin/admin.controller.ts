@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from 'src/guard/authentication.guard';
 import { RolesGuard } from 'src/guard/roles.guard';
 import { Roles } from '../authorization/roles.decorator';
@@ -7,6 +7,7 @@ import { AdminService } from './admin.service';
 import { UserService } from '../user/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { dS, fileValidation, fileValidationTypes } from 'src/common';
+import { CreateAdminDto } from './dto/create-admin.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -176,6 +177,13 @@ export class AdminController {
     return this.adminService.getRecentCategories(+limit);
 }
 
+//----------------Become volunteer-----------------
+
+//create admin 
+@Post()
+createAdmin(@Body() body: CreateAdminDto){
+    return this.adminService.createAdmin(body)
+}
 
 }
 

@@ -5,7 +5,7 @@ import { Opportunity } from 'src/models/opportunity/opportunity.schema';
 import { Types } from 'mongoose';
 import { OpportunityRepository } from 'src/models/opportunity/opportunity.repository';
 import { ConfirmEmail, ConfirmVolunteerRequist, MessageService, UserRole } from 'src/utils';
-import { deleteFile } from 'src/common';
+import { deleteFile, PasswordService } from 'src/common';
 import slugify from 'slugify';
 import { Roles } from '../authorization/roles.decorator';
 
@@ -20,7 +20,9 @@ export class AdminService {
         private communityRepo: CommunityRepository,
         private messageService: MessageService,
         private opportunityRepo: OpportunityRepository,
-        private CategoryRepo:CategoryRepository,
+        private CategoryRepo: CategoryRepository,
+        private passwordService: PasswordService,
+
     ) { }
 
     //-----------------USER-----------------
@@ -409,17 +411,17 @@ export class AdminService {
             success: true, message: 'User volunteer request rejected', data: user
         };
     };
-    
+
     //-----------------get all stats of users, communities, opportunities, and volunteers-----------------
 
     getAllStats = async () => {
         const totalUsers = await this.userRepo.countDocuments();
         const verifiedUsers = await this.userRepo.countDocuments({ confirmEmail: ConfirmEmail.VERIFIED });
-        const volunteers = await this.userRepo.countDocuments({ roles:UserRole.VOLUNTEER });
+        const volunteers = await this.userRepo.countDocuments({ roles: UserRole.VOLUNTEER });
         const pendingRequests = await this.userRepo.countDocuments({ vulonteerReqStatus: ConfirmVolunteerRequist.PENDING });
         const communities = await this.communityRepo.countDocuments();
         const opportunities = await this.opportunityRepo.countDocuments();
-        
+
         return {
             success: true,
             data: {
@@ -429,30 +431,30 @@ export class AdminService {
                 pendingRequests,
                 communities,
                 opportunities,
-                
+
             }
 
         };
-        
+
     }
 
     //get top 5 communities by number of members
     topCommunities = async () => {
         const topCommunities = await this.communityRepo.find().sort({ members: -1 }).limit(5).select('name image slug members').lean();
-    
-    return {
-        success: true,
-        data: topCommunities
+
+        return {
+            success: true,
+            data: topCommunities
         }
 
     }
 
     //get roles stats for pie chart
-    getRolesStats = async () => {   
+    getRolesStats = async () => {
         const rolesStats = await this.userRepo.aggtegate([
             {
                 $group: {
-                _id: '$roles',
+                    _id: '$roles',
                     count: { $sum: 1 }
                 }
             },
@@ -478,64 +480,90 @@ export class AdminService {
 
     //get user growth by month
     async getUserGrowth(): Promise<{ month: string; count: number }[]> {
-  const result = await this.userRepo.aggtegate([
-    {
-      $group: {
-        _id: {
-          year: { $year: '$createdAt' },
-          month: { $month: '$createdAt' },
-        },
-        count: { $sum: 1 },
-      },
-    },
-    {
-      $sort: {
-        '_id.year': 1,
-        '_id.month': 1,
-      },
-    },
-    {
-      $project: {
-        month: {
-          $concat: [
-            { $toString: '$_id.year' },
-            '-',
+        const result = await this.userRepo.aggtegate([
             {
-              $cond: [
-                { $lt: ['$_id.month', 10] },
-                { $concat: ['0', { $toString: '$_id.month' }] },
-                { $toString: '$_id.month' },
-              ],
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' },
+                    },
+                    count: { $sum: 1 },
+                },
             },
-          ],
-        },
-        count: 1,
-        _id: 0,
-      },
-    },
-  ]);
+            {
+                $sort: {
+                    '_id.year': 1,
+                    '_id.month': 1,
+                },
+            },
+            {
+                $project: {
+                    month: {
+                        $concat: [
+                            { $toString: '$_id.year' },
+                            '-',
+                            {
+                                $cond: [
+                                    { $lt: ['$_id.month', 10] },
+                                    { $concat: ['0', { $toString: '$_id.month' }] },
+                                    { $toString: '$_id.month' },
+                                ],
+                            },
+                        ],
+                    },
+                    count: 1,
+                    _id: 0,
+                },
+            },
+        ]);
 
-  
-  return result;
-}
 
-//ecentVolunteerRequests
+        return result;
+    }
+
+    //ecentVolunteerRequests
     async getRecentVolunteerRequests(limit = 5) {
-  return this.userRepo
-    .find({ volunteerStatus: 'pending' })
-    .sort({ createdAt: -1 }) // most recent first
-    .limit(limit)
-    .select('fullName email createdAt') // select only required fields
-    .exec();
-}
+        return this.userRepo
+            .find({ volunteerStatus: 'pending' })
+            .sort({ createdAt: -1 }) // most recent first
+            .limit(limit)
+            .select('fullName email createdAt') // select only required fields
+            .exec();
+    }
 
-//RecentCategories
+    //RecentCategories
     async getRecentCategories(limit = 10) {
-    return this.CategoryRepo
-      .find()
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .select('name createdAt')
-      .exec();
-  }      
+        return this.CategoryRepo
+            .find()
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .select('name createdAt')
+            .exec();
+    }
+
+    //-----------------ADMIN-----------------
+
+    //create admin
+    createAdmin = async (body: any) => {
+        const { firstName, lastName, email, password, address, gender, phone } = body
+
+        //check existence 
+        const emailExist = await this.userRepo.findOne({ $or: [{ email }, { phone }]})
+        if (emailExist) {
+            throw new ConflictException(this.messageService.messages.user.alreadyExist)
+        }
+
+        //prepare data
+        const hashedPassword = await this.passwordService.hashPassword(password)
+        body.password = hashedPassword
+        body.roles = UserRole.ADMIN
+        body.confirmEmail = ConfirmEmail.VERIFIED
+
+        //create admin
+        const createdAdmin = await this.userRepo.create(body)
+
+        //response 
+        return { success: true, data: createdAdmin }
+    }
+
 }

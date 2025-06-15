@@ -11,15 +11,16 @@ import { Opportunity, OpportunitySchema } from 'src/models/opportunity/opportuni
 import { UserService } from '../user/user.service';
 import { CheckExistService } from '../user/checkExist.service';
 import { CategoryService } from '../category/category.service';
+import { PasswordService } from 'src/common';
 
 @Module({
   imports: [MongooseModule.forFeature([
-      { name: User.name, schema: userSchema },
-      { name: Community.name, schema: communitySchema },
-      { name: Opportunity.name, schema: OpportunitySchema },
-      { name: Category.name, schema: categorySchema }    
-    ])],
+    { name: User.name, schema: userSchema },
+    { name: Community.name, schema: communitySchema },
+    { name: Opportunity.name, schema: OpportunitySchema },
+    { name: Category.name, schema: categorySchema }
+  ])],
   controllers: [AdminController],
-  providers: [AdminService,UserRepository,CommunityRepository,OpportunityRepository,JwtService,MessageService,RolesGuard,UserService,CheckExistService,CategoryRepository],
+  providers: [AdminService, UserRepository, CommunityRepository, OpportunityRepository, JwtService, PasswordService, MessageService, RolesGuard, UserService, CheckExistService, CategoryRepository],
 })
-export class AdminModule {}
+export class AdminModule { }
