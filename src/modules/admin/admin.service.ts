@@ -566,4 +566,11 @@ export class AdminService {
         return { success: true, data: createdAdmin }
     }
 
+        getAllAdmins = async () => {
+        const admins = await this.userRepo.find({ roles: UserRole.ADMIN }).select('-password');
+        if (!admins || admins.length === 0) {
+            throw new NotFoundException('No admins found');
+        }
+        return { success: true, data: admins };
+    }
 }

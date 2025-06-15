@@ -8,6 +8,7 @@ import { UserService } from '../user/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { dS, fileValidation, fileValidationTypes } from 'src/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
+import { get } from 'http';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -185,6 +186,9 @@ createAdmin(@Body() body: CreateAdminDto){
     return this.adminService.createAdmin(body)
 }
 
+@Get('all-admins')
+getAllAdmins() {
+    return this.adminService.getAllAdmins();
 }
 
-
+}
