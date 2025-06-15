@@ -79,7 +79,7 @@ export class User {
     IDImages:IDcardImages
 
     @Prop({ type: String, enum:Object.values(ConfirmVolunteerRequist)})
-    vulonteerReqStatus:string
+    volunteerReqStatus:string
 
     readonly _id: Types.ObjectId
     readonly createdAt: Date

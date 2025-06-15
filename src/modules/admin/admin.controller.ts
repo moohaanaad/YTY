@@ -123,8 +123,13 @@ export class AdminController {
         return this.adminService.updateOpportunity(param, body, file)
     }
 
-    //----------------Become volunteer-----------------
-    
+    //----------------VOLUNTEER-----------------
+
+    @Get('volunteer')
+    getAllVolunteer() {
+        return this.adminService.getAllVolunteer();
+    }
+
     //accept volunteer
     @Patch('users/:id/accept-volunteer')
     acceptVolunteerRequest(@Param('id') userId: string) {
@@ -136,59 +141,54 @@ export class AdminController {
         return this.adminService.rejectVolunteerRequest(userId);
     }
     //--------------------------------------DASHBOARD------------------------------------//
-    // get satas 
 
+    // get satas 
     @Get('stats')
     getStats() {
         return this.adminService.getAllStats();
     }
 
     // TOP 5 Communities
-
-    @Get ('stats/topCommunities')
+    @Get('stats/topCommunities')
     async getTopCommunities() {
         return this.adminService.topCommunities();
     }
 
     // ROLRS PI 
-
-    @Get ('stats/rolespi')
+    @Get('stats/rolespi')
     async getRolesStats() {
         return this.adminService.getRolesStats();
     }
 
     // USER GROTH 
-
     @Get('stats/usergrowth')
     async getUserGrowth() {
-    return this.adminService.getUserGrowth();
+        return this.adminService.getUserGrowth();
     }
 
     // RECENT VOLUNTEER REQUESTES
-
     @Get('recent-volunteer-requests')//doesnt work yet
-
     async getRecentVolunteerRequests(@Query('limit') limit = 5) {
-    return this.adminService.getRecentVolunteerRequests();
-}
+        return this.adminService.getRecentVolunteerRequests();
+    }
 
-//recent categories
+    //recent categories
     @Get('recent-categories')
     async getRecentCategories(@Query('limit') limit = 10) {
-    return this.adminService.getRecentCategories(+limit);
-}
+        return this.adminService.getRecentCategories(+limit);
+    }
 
-//----------------Become volunteer-----------------
+    //----------------ADMIN-----------------
 
-//create admin 
-@Post()
-createAdmin(@Body() body: CreateAdminDto){
-    return this.adminService.createAdmin(body)
-}
+    //create admin 
+    @Post()
+    createAdmin(@Body() body: CreateAdminDto) {
+        return this.adminService.createAdmin(body)
+    }
 
-@Get('all-admins')
-getAllAdmins() {
-    return this.adminService.getAllAdmins();
-}
+    @Get()
+    getAllAdmins() {
+        return this.adminService.getAllAdmins();
+    }
 
 }

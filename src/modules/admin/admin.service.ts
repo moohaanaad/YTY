@@ -30,7 +30,7 @@ export class AdminService {
     //all users
     getAllUsers = async () => {
 
-        const users = await this.userRepo.find().select('-password').populate('communities', 'name');
+        const users = await this.userRepo.find({ roles: UserRole.USER }).select('-password').populate('communities', 'name');
         if (!users) throw new NotFoundException('No users found');
 
         return { success: true, data: users };
@@ -342,6 +342,15 @@ export class AdminService {
 
     //-----------------VOLUNTEER-----------------
 
+    getAllVolunteer = async () => {
+
+        const users = await this.userRepo.find({ roles: UserRole.VOLUNTEER }).select('-password').populate('communities', 'name');
+        if (!users) throw new NotFoundException('No volunteer found');
+
+        return { success: true, data: users };
+
+    }
+
     //accept volunteer request
     acceptVolunteerRequest = async (userId: string) => {
         //check if userId is provided
@@ -361,13 +370,13 @@ export class AdminService {
         if (!user) throw new NotFoundException('User not found');
 
         //check if user req before
-        if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
+        if (user.volunteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
             throw new BadRequestException('User does not have a pending volunteer request');
         }
 
         //make user volunteer
 
-        user.vulonteerReqStatus = ConfirmVolunteerRequist.VERIFIED;
+        user.volunteerReqStatus = ConfirmVolunteerRequist.VERIFIED;
         user.roles = 'volunteer';
         //save data
         await user.save();
@@ -396,12 +405,12 @@ export class AdminService {
 
         //check if user req before
 
-        if (user.vulonteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
+        if (user.volunteerReqStatus !== ConfirmVolunteerRequist.PENDING) {
             throw new BadRequestException('User does not have a pending volunteer request');
         }
         //reject user to be volunteer
 
-        user.vulonteerReqStatus = ConfirmVolunteerRequist.REJECTED;
+        user.volunteerReqStatus = ConfirmVolunteerRequist.REJECTED;
         //save data
 
         await user.save();
@@ -418,7 +427,7 @@ export class AdminService {
         const totalUsers = await this.userRepo.countDocuments();
         const verifiedUsers = await this.userRepo.countDocuments({ confirmEmail: ConfirmEmail.VERIFIED });
         const volunteers = await this.userRepo.countDocuments({ roles: UserRole.VOLUNTEER });
-        const pendingRequests = await this.userRepo.countDocuments({ vulonteerReqStatus: ConfirmVolunteerRequist.PENDING });
+        const pendingRequests = await this.userRepo.countDocuments({ volunteerReqStatus: ConfirmVolunteerRequist.PENDING });
         const communities = await this.communityRepo.countDocuments();
         const opportunities = await this.opportunityRepo.countDocuments();
 
@@ -548,7 +557,7 @@ export class AdminService {
         const { firstName, lastName, email, password, address, gender, phone } = body
 
         //check existence 
-        const emailExist = await this.userRepo.findOne({ $or: [{ email }, { phone }]})
+        const emailExist = await this.userRepo.findOne({ $or: [{ email }, { phone }] })
         if (emailExist) {
             throw new ConflictException(this.messageService.messages.user.alreadyExist)
         }
@@ -566,7 +575,7 @@ export class AdminService {
         return { success: true, data: createdAdmin }
     }
 
-        getAllAdmins = async () => {
+    getAllAdmins = async () => {
         const admins = await this.userRepo.find({ roles: UserRole.ADMIN }).select('-password');
         if (!admins || admins.length === 0) {
             throw new NotFoundException('No admins found');
