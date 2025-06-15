@@ -531,11 +531,11 @@ export class AdminService {
     }
 
     //ecentVolunteerRequests
-    async getRecentVolunteerRequests(limit = 5) {
+    async getRecentVolunteerRequests(limit: number = 10): Promise<User[]> {
         return this.userRepo
-            .find({ volunteerStatus: 'pending' })
+            .find({ volunteerReqStatus: 'pending' })
             .sort({ createdAt: -1 }) // most recent first
-            .limit(limit)
+            .limit(5) // limit to 5 most recent requests
             .select('fullName email createdAt') // select only required fields
             .exec();
     }

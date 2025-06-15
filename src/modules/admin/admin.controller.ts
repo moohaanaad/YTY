@@ -168,8 +168,8 @@ export class AdminController {
 
     // RECENT VOLUNTEER REQUESTES
     @Get('recent-volunteer-requests')//doesnt work yet
-    async getRecentVolunteerRequests(@Query('limit') limit = 5) {
-        return this.adminService.getRecentVolunteerRequests();
+    async getRecentVolunteerRequests(@Query('limit') limit = 10) {
+        return this.adminService.getRecentVolunteerRequests(+limit);
     }
 
     //recent categories
