@@ -17,23 +17,18 @@ export class CategoryService {
     ) { }
 
     //create category
-    createCategory = async (body: any, req: any, file: Express.Multer.File) => {
+    createCategory = async (body: any, req: any) => {
         const { user } = req
         const { name } = body
 
         //chack Existence
-        if (!file) {
-            throw new BadRequestException(this.messageService.messages.File.imageRequired)
-        }
         const categoryExist = await this.categoryRepo.findOne({ name })
         if (categoryExist) {
-            deleteFile(file.path)
             throw new ConflictException(this.messageService.messages.category.alreadyExist)
         }
 
         //save data
         body.slug = slugify(name)
-        body.image = file.path
         body.createdBy = user._id
         body.updatedBy = user._id
         const createdCategory = await this.categoryRepo.create(body)
@@ -73,24 +68,20 @@ export class CategoryService {
     }
 
     //update category
-    updateCategory = async (param: any, body: any, req: any, file: Express.Multer.File) => {
+    updateCategory = async (param: any, body: any, req: any) => {
         const { user } = req
         const { name, desc } = body
         const { categoryId } = param
         //check existence 
         const categoryExist = await this.categoryRepo.findById(categoryId)
         if (!categoryExist) {
-            if (file) {
-                deleteFile(file.path)
-            }
+            
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
         if (name && categoryExist.name != name) {
             const nameExist = await this.categoryRepo.findOne({ name })
             if (nameExist) {
-                if (file) {
-                    deleteFile(file.path)
-                }
+                
                 throw new ConflictException(this.messageService.messages.category.alreadyExist)
             }
             categoryExist.name = name
@@ -99,10 +90,7 @@ export class CategoryService {
         if (desc && desc !== categoryExist.desc) {
             categoryExist.desc = desc
         }
-        if (file) {
-            deleteFile(categoryExist?.image)
-            categoryExist.image = file.path
-        }
+    
         categoryExist.updatedBy = user._id
         await categoryExist.save()
         return { success: true, data: categoryExist }
@@ -124,11 +112,7 @@ export class CategoryService {
 
             //prepare data
             const subcategoriesIds = SubcategoryExist.map((sub) => sub._id)
-            const imagesPath = SubcategoryExist.map((sub) => sub.image)
-
-
             const communityExist = await this.communityRepo.find({ category: categoryId })
-
 
             //prepare communities data
             if (communityExist) {
@@ -150,12 +134,8 @@ export class CategoryService {
 
             //delete
             await this.subcategoryRepo.deleteMany({ _id: { $in: subcategoriesIds } })
-            for (let i = 0; i < imagesPath.length; i++) {
-                deleteFile(imagesPath[i]);
-
-            }
+            
         }
-        deleteFile(categoryExist.image)
         return { success: true }
     }
 

@@ -344,7 +344,14 @@ export class AdminService {
 
     getAllVolunteer = async () => {
 
-        const users = await this.userRepo.find({ roles: UserRole.VOLUNTEER }).select('-password').populate('communities', 'name');
+        const users = await this.userRepo.find({
+            $or: [
+                { roles: UserRole.VOLUNTEER },
+                { volunteerReqStatus: ConfirmVolunteerRequist.PENDING },
+                { volunteerReqStatus: ConfirmVolunteerRequist.REJECTED }
+            ]
+        }).select('-password').populate('communities', 'name');
+        
         if (!users) throw new NotFoundException('No volunteer found');
 
         return { success: true, data: users };

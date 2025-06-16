@@ -14,28 +14,23 @@ export class SubcategoryService {
     ) { }
 
     //create subcategory
-    createSubcategory = async (body: any, req: any, file: Express.Multer.File) => {
+    createSubcategory = async (body: any, req: any) => {
         const { user } = req
         const { name, categoryId } = body
 
         //check existence
-        if (!file) {
-            throw new BadRequestException(this.messageService.messages.File.imageRequired)
-        }
+        
         const subcategoryExist = await this.subcategoryRepo.findOne({ name })
         if (subcategoryExist) {
-            deleteFile(file.path)
             throw new ConflictException(this.messageService.messages.subcategory.alreadyExist)
         }
         const categoryExist = await this.categoryRepo.findById(categoryId)
         if (!categoryExist) {
-            deleteFile(file.path)
             throw new NotFoundException(this.messageService.messages.category.notFound)
         }
         //prepare data
 
         body.slug = slugify(name)
-        body.image = file.path
         body.createdBy = user._id
         body.updatedBy = user._id
 
@@ -93,7 +88,7 @@ export class SubcategoryService {
     }
 
     //update subcategory
-    updateSubcategory = async (param: any, body: any, req: any, file: Express.Multer.File) => {
+    updateSubcategory = async (param: any, body: any, req: any) => {
         //distract
         const { user } = req
         const { subcategoryId } = param
@@ -107,9 +102,6 @@ export class SubcategoryService {
             select: "name image slug -_id"
         })
         if (!subcategoryExist) {
-            if (file) {
-                deleteFile(file.path)
-            }
             throw new NotFoundException(this.messageService.messages.subcategory.notFound)
         }
 
@@ -117,17 +109,11 @@ export class SubcategoryService {
         if (name && subcategoryExist.name != name) {
             const nameExist = await this.subcategoryRepo.findOne({ name })
             if (nameExist) {
-                if (file) {
-                    deleteFile(file.path)
-                }
+    
                 throw new ConflictException(this.messageService.messages.subcategory.alreadyExist)
             }
             subcategoryExist.name = name
             subcategoryExist.slug = slugify(name)
-        }
-        if (file) {
-            deleteFile(subcategoryExist.image)
-            subcategoryExist.image = file.path
         }
         subcategoryExist.updatedBy = user._id
         //save update
@@ -167,9 +153,6 @@ export class SubcategoryService {
             }
 
         }
-
-        //delete image
-        deleteFile(subcategoryExist.image)
 
         //response
         return { success: true }

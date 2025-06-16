@@ -1,9 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common"
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common"
 import { AuthGuard } from "src/guard/authentication.guard"
 import { SubcategoryService } from "./subcategory.service"
-import { FileInterceptor } from "@nestjs/platform-express"
+import {  } from "@nestjs/platform-express"
 import { CreateSubcategoryDto } from "./dto/createSubcategory.dto"
-import { dS, fileValidation, fileValidationTypes } from "src/common"
 import { CategoryParamDto } from "../category/dto/categoryParam.dto"
 import { SubcategoryParamDto } from "./dto/subcategoryParam.dto"
 import { RolesGuard } from "src/guard/roles.guard"
@@ -19,12 +18,8 @@ export class SubcategoryController {
     //create subcategory
     @Post()
     @Roles(UserRole.ADMIN)
-    @UseInterceptors(FileInterceptor('image', {
-        storage: dS('uploads/subcategory'),
-        fileFilter: fileValidation(fileValidationTypes.image)
-    }))
-    createSubcategory(@Body() body: CreateSubcategoryDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-        return this.subcategoryService.createSubcategory(body, req, file)
+    createSubcategory(@Body() body: CreateSubcategoryDto, @Req() req: any) {
+        return this.subcategoryService.createSubcategory(body, req)
     }
 
     //get all subcategories of specific category
@@ -42,12 +37,8 @@ export class SubcategoryController {
     //update subcategory
     @Put(':subcategoryId')
     @Roles(UserRole.ADMIN)
-    @UseInterceptors(FileInterceptor('image', {
-        storage: dS('uploads/subcategory'),
-        fileFilter: fileValidation(fileValidationTypes.image)
-    }))
-    updateSubcategory(@Param() param: SubcategoryParamDto, @Body() body: any, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-        return this.subcategoryService.updateSubcategory(param, body, req, file)
+    updateSubcategory(@Param() param: SubcategoryParamDto, @Body() body: any, @Req() req: any) {
+        return this.subcategoryService.updateSubcategory(param, body, req)
     }
 
     //delete subcategory

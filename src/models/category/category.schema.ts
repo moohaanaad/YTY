@@ -13,9 +13,6 @@ export class Category {
     @Prop({ type: String, trim: true, required: true })
     desc:string
 
-    @Prop({ type: String, required: true })
-    image: string
-
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     createdBy: Types.ObjectId
 

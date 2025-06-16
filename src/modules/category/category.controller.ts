@@ -1,6 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common"
-import { FileInterceptor } from "@nestjs/platform-express"
-import { dS, fileValidation, fileValidationTypes } from "src/common"
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common"
 import { AuthGuard } from "src/guard/authentication.guard"
 import { CategoryService } from "./category.service"
 import { CreateCategoryDto } from "./dto/category.dto"
@@ -12,20 +10,15 @@ import { UserRole } from "src/utils"
 
 
 @Controller('category')
-@UseGuards(AuthGuard,RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class CategoryController {
     constructor(private categoryService: CategoryService) { }
-    
+
     //create category
     @Post()
     @Roles(UserRole.ADMIN)
-    @UseInterceptors(
-        FileInterceptor('image', {
-            storage: dS('uploads/category'),
-            fileFilter: fileValidation(fileValidationTypes.image)
-        }))
-    careateCategory(@Body() body: CreateCategoryDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-        return this.categoryService.createCategory(body, req, file)
+    careateCategory(@Body() body: CreateCategoryDto, @Req() req: any) {
+        return this.categoryService.createCategory(body, req)
     }
 
     //get all categories
@@ -43,13 +36,8 @@ export class CategoryController {
     //update category
     @Put(':categoryId')
     @Roles(UserRole.ADMIN)
-    @UseInterceptors(
-        FileInterceptor('image', {
-            storage: dS('uploads/category'),
-            fileFilter: fileValidation(fileValidationTypes.image)
-        }))
-    updateCategory(@Param() param: CategoryParamDto, @Body() body: UpdateCategoryDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-        return this.categoryService.updateCategory(param, body, req, file)
+    updateCategory(@Param() param: CategoryParamDto, @Body() body: UpdateCategoryDto, @Req() req: any) {
+        return this.categoryService.updateCategory(param, body, req)
     }
 
     //delete category
